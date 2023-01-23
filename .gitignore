@@ -256,3 +256,5 @@ lib
 # Other Files
 *.exe
 *.zip
+storage
+songs
