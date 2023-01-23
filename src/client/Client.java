@@ -1,8 +1,6 @@
 package client;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SocketChannel;
@@ -46,7 +44,7 @@ public class Client implements Runnable {
                 byte[] byteArray = new byte[buffer.remaining()];
                 buffer.get(byteArray);
                 String reply = new String(byteArray, "UTF-8"); // buffer drain
-
+                
                 System.out.println("The server replied <" + reply + ">");
             }
 

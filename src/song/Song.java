@@ -9,9 +9,9 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
-import java.io.Serializable;
+import java.util.concurrent.atomic.AtomicInteger;
 
-public class Song extends AudioFormat implements Serializable {
+public class Song {
     private static final String SINGER_NAME_REGEX = "-";
     private static final int SINGER = 0;
     private static final int NAME = 1;
@@ -20,24 +20,44 @@ public class Song extends AudioFormat implements Serializable {
     private final String singerName;
     private final String songName;
     private final String fileName;
-    private int streams;
+    private final AtomicInteger streams;
 
-    public Song(String songName, String singerName, String fileName, AudioFormat format) {
-        super(format.getEncoding(), format.getSampleRate(), format.getSampleSizeInBits(), format.getChannels(),
-            format.getFrameSize(), format.getFrameRate(), format.isBigEndian());
+    private AudioFormat.Encoding encoding;
+    private float sampleRate;
+    private int sampleSizeInBits;
+    private int channels;
+    private int frameSize;
+    private float frameRate;
+    private boolean bigEndian;
+
+    Song(String songName, String singerName, String fileName, AudioFormat format) {
+        encoding = format.getEncoding();
+        sampleRate = format.getSampleRate();
+        sampleSizeInBits = format.getSampleSizeInBits();
+        channels = format.getChannels();
+        frameSize = format.getFrameSize();
+        frameRate = format.getFrameRate();
+        bigEndian = format.isBigEndian();
 
         this.songName = songName;
         this.fileName = fileName;
         this.singerName = singerName;
-        streams = 0;
+        streams = new AtomicInteger(0);
+    }
+
+    public Song(String songName, String singerName) {
+        this.singerName = singerName;
+        this.songName = songName;
+        fileName = "";
+        streams = new AtomicInteger(0);
     }
 
     public void stream() {
-        ++streams;
+        streams.getAndIncrement();
     }
 
     public int getStreams() {
-        return streams;
+        return streams.get();
     }
 
     public String getSongName() {
@@ -52,8 +72,9 @@ public class Song extends AudioFormat implements Serializable {
         return fileName;
     }
 
-    public AudioFormat getAudioFormat() {
-        return this;
+    public String getAudioFormatString() {
+        return encoding.toString() + " " + sampleRate + " " + sampleSizeInBits + " " + channels +
+               " " + frameSize + " " + frameRate + " " + bigEndian;
     }
 
     public static Song of(String fileName) throws SongFileNotFoundException {
@@ -72,14 +93,14 @@ public class Song extends AudioFormat implements Serializable {
             toReturn = new Song(name, singerName, fileName, audioFormat);
 
         } catch (UnsupportedAudioFileException e) {
-            throw new SongFileNotFoundException("A Song with the Name: " + name +
-                                                " does not exist");
+            throw new SongFileNotFoundException("A Song with the Name: " + name + " does not exist");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
 
         return toReturn;
     }
+
 
     @Override
     public boolean equals(Object o) {
