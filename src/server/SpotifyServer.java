@@ -1,5 +1,6 @@
 package server;
 
+import command.creator.CommandCreator;
 import command.executor.CommandExecutor;
 import storage.InMemoryStorage;
 import storage.Storage;
@@ -75,8 +76,12 @@ public class SpotifyServer implements Runnable {
                                 continue;
                             }
 
-                            //String output = commandExecutor.execute(CommandCreator.newCommand(clientInput));
-                            //writeClientOutput(clientChannel, output);
+                            if (clientInput.equals("disconnect")) {
+                                stop();
+                            }
+
+                            String output = commandExecutor.execute(CommandCreator.create(clientInput));
+                            writeClientOutput(clientChannel, output);
 
                         } else if (key.isAcceptable()) {
                             accept(selector, key);
@@ -197,7 +202,7 @@ public class SpotifyServer implements Runnable {
     }
 
     public static void main(String[] args) {
-        SpotifyServer server = new SpotifyServer(7777, new CommandExecutor(new InMemoryStorage()));
+        SpotifyServer server = new SpotifyServer(7777, new CommandExecutor());
         new Thread(server).start();
     }
 }

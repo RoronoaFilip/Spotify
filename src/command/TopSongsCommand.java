@@ -9,18 +9,17 @@ import java.util.List;
 public class TopSongsCommand extends Command {
     private final boolean all;
     private final int limit;
-    private final Storage storage;
 
     public TopSongsCommand(int limit, Storage storage) {
+        super(storage);
         this.limit = limit;
         all = false;
-        this.storage = storage;
     }
 
     public TopSongsCommand(boolean all, Storage storage) {
+        super(storage);
         limit = 0;
         this.all = all;
-        this.storage = storage;
     }
 
     @Override

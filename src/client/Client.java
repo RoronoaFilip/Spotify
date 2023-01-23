@@ -27,6 +27,10 @@ public class Client implements Runnable {
                 String message = scanner.nextLine(); // read a line from the console
 
                 if ("disconnect".equals(message)) {
+                    buffer.clear(); // switch to writing mode
+                    buffer.put(message.getBytes()); // buffer fill
+                    buffer.flip(); // switch to reading mode
+                    socketChannel.write(buffer); // buffer drain
                     break;
                 }
 

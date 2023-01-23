@@ -1,8 +1,10 @@
 package command.creator;
 
-import java.util.ArrayList;
-import java.util.List;
+import command.Command;
 
 public class CommandCreator {
 
+    public static Command create(String input) {
+        return null;
+    }
 }

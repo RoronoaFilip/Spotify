@@ -38,6 +38,9 @@ public class PlaylistBase implements Playlist {
         Set<Song> songSet = new HashSet<>();
         for (String songLine : songsSplit) {
             try {
+                if (songLine.isBlank()) {
+                    continue;
+                }
                 songSet.add(Song.of(songLine));
             } catch (SongNotFoundException e) {
                 // Skip song that isn't in database

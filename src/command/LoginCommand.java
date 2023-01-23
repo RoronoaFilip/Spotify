@@ -21,6 +21,7 @@ public class LoginCommand extends Command {
     private final SpotifyServer spotifyServer;
 
     public LoginCommand(String username, String password, SpotifyServer spotifyServer) {
+        super(spotifyServer.getStorage());
         this.username = username;
         this.password = password;
         this.spotifyServer = spotifyServer;

@@ -8,11 +8,10 @@ import java.util.List;
 
 public class SearchCommand extends Command {
     private final String filter;
-    private final Storage storage;
 
     public SearchCommand(String filter, Storage storage) {
+        super(storage);
         this.filter = filter;
-        this.storage = storage;
     }
 
     @Override
