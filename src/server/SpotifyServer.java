@@ -1,6 +1,5 @@
 package server;
 
-import command.CommandCreator;
 import command.CommandExecutor;
 import storage.InMemoryStorage;
 
@@ -58,8 +57,8 @@ public class SpotifyServer implements Runnable {
                                 continue;
                             }
 
-                            String output = commandExecutor.execute(CommandCreator.newCommand(clientInput));
-                            writeClientOutput(clientChannel, output);
+                            //String output = commandExecutor.execute(CommandCreator.newCommand(clientInput));
+                            //writeClientOutput(clientChannel, output);
 
                         } else if (key.isAcceptable()) {
                             accept(selector, key);

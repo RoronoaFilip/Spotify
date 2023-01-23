@@ -17,21 +17,31 @@ public class Song extends AudioFormat implements Serializable {
     private static final int NAME = 1;
 
     public static final String WAV = ".wav";
-    private final String name;
     private final String singerName;
+    private final String songName;
     private final String fileName;
+    private int streams;
 
-    public Song(String name, String singerName, String fileName, AudioFormat format) {
+    public Song(String songName, String singerName, String fileName, AudioFormat format) {
         super(format.getEncoding(), format.getSampleRate(), format.getSampleSizeInBits(), format.getChannels(),
             format.getFrameSize(), format.getFrameRate(), format.isBigEndian());
 
-        this.name = name;
+        this.songName = songName;
         this.fileName = fileName;
         this.singerName = singerName;
+        streams = 0;
     }
 
-    public String getName() {
-        return name;
+    public void stream() {
+        ++streams;
+    }
+
+    public int getStreams() {
+        return streams;
+    }
+
+    public String getSongName() {
+        return songName;
     }
 
     public String getSingerName() {
@@ -80,16 +90,21 @@ public class Song extends AudioFormat implements Serializable {
 
         Song song = (Song) o;
 
-        if (!name.equals(song.name))
+        if (!songName.equals(song.songName))
             return false;
         return singerName.equals(song.singerName);
     }
 
     @Override
     public int hashCode() {
-        int result = name.hashCode();
+        int result = songName.hashCode();
         result = 31 * result + singerName.hashCode();
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return singerName + SINGER_NAME_REGEX + songName;
     }
 
     private static String getNameWithoutExtension(String fileName) {
