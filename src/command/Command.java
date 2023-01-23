@@ -1,4 +1,6 @@
 package command;
 
-public record Command(String command, String[] arguments) {
+import java.util.concurrent.Callable;
+
+public abstract class Command implements Callable<String> {
 }
