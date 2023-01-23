@@ -1,8 +1,8 @@
 package server;
 
 import command.executor.CommandExecutor;
-import exceptions.UserAlreadyLoggedInException;
-import exceptions.UserNotRegisteredException;
+import user.exceptions.UserAlreadyLoggedInException;
+import user.exceptions.UserNotRegisteredException;
 import storage.InMemoryStorage;
 import storage.Storage;
 import user.User;
@@ -21,18 +21,17 @@ import java.util.TreeMap;
 
 public class SpotifyServer implements Runnable {
     private static final long STREAMING_PORT = 7000;
-    private static final long SERVER_PORT = 6999;
 
     private static final int BUFFER_SIZE = 1024;
     private static final String HOST = "localhost";
 
     private final CommandExecutor commandExecutor;
-    private final Storage storage;
+    private Storage storage = null;
 
     private final int port;
     private boolean isServerWorking;
 
-    private ByteBuffer buffer;
+    private final ByteBuffer buffer;
     private Selector selector;
 
     private final TreeMap<Long, User> currentSession;
@@ -42,17 +41,21 @@ public class SpotifyServer implements Runnable {
         this.port = port;
         this.commandExecutor = commandExecutor;
 
-        storage = new InMemoryStorage();
+        this.buffer = ByteBuffer.allocate(BUFFER_SIZE);
+
         currentSession = new TreeMap<>();
+        isServerWorking = true;
     }
 
     @Override
     public void run() {
-        try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open()) {
+        try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
+             Storage storage = new InMemoryStorage()) {
+            this.storage = storage;
+
             selector = Selector.open();
             configureServerSocketChannel(serverSocketChannel, selector);
-            this.buffer = ByteBuffer.allocate(BUFFER_SIZE);
-            isServerWorking = true;
+
             while (isServerWorking) {
                 try {
                     int readyChannels = selector.select();
@@ -138,8 +141,8 @@ public class SpotifyServer implements Runnable {
 
     public void logIn(User user) throws UserAlreadyLoggedInException, UserNotRegisteredException {
         synchronized (currentSessionLock) {
-            checkLoggedIn(user);
             checkRegistered(user);
+            checkLoggedIn(user);
 
             if (currentSession.isEmpty()) {
                 currentSession.put(STREAMING_PORT, user);

@@ -1,6 +1,7 @@
 package command;
 
-import exceptions.UserAlreadyExistsException;
+import command.exceptions.UnsuccessfulRegistrationException;
+import user.exceptions.UserAlreadyExistsException;
 import server.SpotifyServer;
 import storage.InMemoryStorage;
 import storage.Storage;
@@ -24,13 +25,13 @@ public class RegisterCommand extends Command {
     }
 
     @Override
-    public String call() {
+    public String call() throws Exception {
         String message;
         try {
             storage.registerUser(username, password);
             message = SUCCESSFUL_REGISTER;
         } catch (UserAlreadyExistsException e) {
-            message = UNSUCCESSFUL_REGISTER;
+            throw new UnsuccessfulRegistrationException(UNSUCCESSFUL_REGISTER);
         }
 
         return message;

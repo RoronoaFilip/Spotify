@@ -33,6 +33,10 @@ public class TopSongsCommand extends Command {
             topSongs = new ArrayList<>(storage.getMostStreamedSongs(limit));
         }
 
+        if (topSongs.isEmpty()) {
+            return "No Songs Found";
+        }
+
         return "Top Songs: " + System.lineSeparator() + Command.constructMessage(topSongs) + System.lineSeparator();
     }
 }

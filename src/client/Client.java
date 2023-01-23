@@ -11,7 +11,7 @@ public class Client implements Runnable {
     private static final String SERVER_HOST = "localhost";
     private static final int BUFFER_SIZE = 512;
 
-    private static final ByteBuffer buffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
+    private final ByteBuffer buffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
 
     @Override
     public void run() {
@@ -44,7 +44,7 @@ public class Client implements Runnable {
                 byte[] byteArray = new byte[buffer.remaining()];
                 buffer.get(byteArray);
                 String reply = new String(byteArray, "UTF-8"); // buffer drain
-                
+
                 System.out.println("The server replied <" + reply + ">");
             }
 

@@ -1,7 +1,8 @@
 package command;
 
-import exceptions.UserAlreadyLoggedInException;
-import exceptions.UserNotRegisteredException;
+import command.exceptions.UnsuccessfulLogInException;
+import user.exceptions.UserAlreadyLoggedInException;
+import user.exceptions.UserNotRegisteredException;
 import server.SpotifyServer;
 import storage.InMemoryStorage;
 import storage.Storage;
@@ -26,7 +27,7 @@ public class LoginCommand extends Command {
     }
 
     @Override
-    public String call() {
+    public String call() throws Exception {
         User user = new User(username, password);
 
         String message = null;
@@ -34,9 +35,9 @@ public class LoginCommand extends Command {
             spotifyServer.logIn(user);
             message = SUCCESSFUL_LOGIN;
         } catch (UserAlreadyLoggedInException e) {
-            message = UNSUCCESSFUL_LOGIN;
+            throw new UnsuccessfulLogInException(UNSUCCESSFUL_LOGIN);
         } catch (UserNotRegisteredException e) {
-            message = USER_DOES_NOT_EXIST;
+            throw new UserNotRegisteredException(USER_DOES_NOT_EXIST);
         }
 
         return message;

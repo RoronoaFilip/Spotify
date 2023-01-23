@@ -22,14 +22,13 @@ public record User(String username, String password) {
 
         if (!username.equals(user.username))
             return false;
-        return password.equals(user.password);
+
+        return true;
     }
 
     @Override
     public int hashCode() {
-        int result = username.hashCode();
-        result = 31 * result + password.hashCode();
-        return result;
+        return username.hashCode();
     }
 
     @Override

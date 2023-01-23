@@ -19,12 +19,13 @@ public class CommandExecutor {
     }
 
     public String execute(Command cmd) {
-        //        return switch (cmd.command()) {
-        //            case ADD -> addToDo(cmd.arguments());
-        //            case COMPLETE -> complete(cmd.arguments());
-        //            case LIST -> list(cmd.arguments());
-        //            default -> "Unknown command";
-        //        };
-        return null;
+        String message;
+        try {
+            message = cmd.call();
+        } catch (Exception e) {
+            message = e.getMessage();
+        }
+
+        return message;
     }
 }

@@ -19,6 +19,10 @@ public class SearchCommand extends Command {
     public String call() {
         List<Song> filteredSongs = new ArrayList<>(storage.filterSongsBasedOn(filter));
 
+        if (filteredSongs.isEmpty()) {
+            return "No Songs Found";
+        }
+
         return "Songs filtered based on " + filter + ":" + System.lineSeparator() +
                Command.constructMessage(filteredSongs) +
                System.lineSeparator();

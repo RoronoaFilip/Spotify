@@ -1,6 +1,6 @@
 package song;
 
-import exceptions.SongFileNotFoundException;
+import song.exceptions.SongNotFoundException;
 import storage.Storage;
 
 import javax.sound.sampled.AudioFormat;
@@ -77,7 +77,7 @@ public class Song {
                " " + frameSize + " " + frameRate + " " + bigEndian;
     }
 
-    public static Song of(String fileName) throws SongFileNotFoundException {
+    public static Song of(String fileName) throws SongNotFoundException {
         String wholeName = getNameWithoutExtension(fileName);
 
         String[] splitWholeName = wholeName.split(SINGER_NAME_REGEX);
@@ -93,7 +93,7 @@ public class Song {
             toReturn = new Song(name, singerName, fileName, audioFormat);
 
         } catch (UnsupportedAudioFileException e) {
-            throw new SongFileNotFoundException("A Song with the Name: " + name + " does not exist");
+            throw new SongNotFoundException("A Song with the Name: " + name + " does not exist");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
