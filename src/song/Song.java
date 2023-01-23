@@ -12,7 +12,7 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Song {
-    private static final String SINGER_NAME_REGEX = "-";
+    public static final String SINGER_NAME_REGEX = "-";
     private static final int SINGER = 0;
     private static final int NAME = 1;
 
@@ -87,7 +87,7 @@ public class Song {
 
         Song toReturn = null;
         try (AudioInputStream inputStream = AudioSystem.getAudioInputStream(
-            new File(Storage.getFolderName() + fileName))) {
+            new File(Storage.getSongsFolderName() + fileName))) {
 
             AudioFormat audioFormat = inputStream.getFormat();
             toReturn = new Song(name, singerName, fileName, audioFormat);
@@ -132,5 +132,33 @@ public class Song {
         int indexOfLastDot = fileName.lastIndexOf('.');
 
         return fileName.substring(0, indexOfLastDot);
+    }
+
+    public AudioFormat.Encoding getEncoding() {
+        return encoding;
+    }
+
+    public float getSampleRate() {
+        return sampleRate;
+    }
+
+    public int getSampleSizeInBits() {
+        return sampleSizeInBits;
+    }
+
+    public int getChannels() {
+        return channels;
+    }
+
+    public int getFrameSize() {
+        return frameSize;
+    }
+
+    public float getFrameRate() {
+        return frameRate;
+    }
+
+    public boolean isBigEndian() {
+        return bigEndian;
     }
 }

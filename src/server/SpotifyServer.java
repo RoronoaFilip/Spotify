@@ -1,11 +1,11 @@
 package server;
 
 import command.executor.CommandExecutor;
-import user.exceptions.UserAlreadyLoggedInException;
-import user.exceptions.UserNotRegisteredException;
 import storage.InMemoryStorage;
 import storage.Storage;
 import user.User;
+import user.exceptions.UserAlreadyLoggedInException;
+import user.exceptions.UserNotRegisteredException;
 
 import java.io.IOException;
 import java.io.UncheckedIOException;
@@ -154,12 +154,18 @@ public class SpotifyServer implements Runnable {
         }
     }
 
-    private void checkRegistered(User user) throws UserNotRegisteredException {
-        if (!storage.doesUserExist(user)) {
-            throw new UserNotRegisteredException(
-                "A User with Username " + user.username() + " and Password " + user.password() +
-                " has not been registered");
+    private void logOut(User user) throws UserAlreadyLoggedInException {
+        synchronized (currentSessionLock) {
+            checkLoggedIn(user);
+
+            long userKey = getKeyFor(user);
+
+            currentSession.remove(userKey);
         }
+    }
+
+    private void checkRegistered(User user) throws UserNotRegisteredException {
+        storage.doesUserExist(user);
     }
 
     private void checkLoggedIn(User user) throws UserAlreadyLoggedInException {
@@ -173,6 +179,10 @@ public class SpotifyServer implements Runnable {
     public long getPort(User user) throws UserAlreadyLoggedInException {
         checkLoggedIn(user);
 
+        return getKeyFor(user);
+    }
+
+    private long getKeyFor(User user) {
         for (Long key : currentSession.keySet()) {
             if (currentSession.get(key).equals(user)) {
                 return key;

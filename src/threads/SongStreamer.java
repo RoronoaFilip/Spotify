@@ -1,12 +1,11 @@
 package threads;
 
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
-import javax.sound.sampled.UnsupportedAudioFileException;
+import song.Song;
+import song.exceptions.SongNotFoundException;
+import storage.Storage;
+
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ServerSocket;
@@ -17,52 +16,44 @@ import java.nio.file.Path;
 
 public class SongStreamer implements Runnable {
     int port;
-    String songName;
+    Song song;
 
-    public SongStreamer(int port, String songName) {
+    public SongStreamer(int port, Song song) {
         this.port = port;
-        this.songName = songName;
+        this.song = song;
     }
 
     @Override
     public void run() {
-        AudioInputStream inputStream = null;
-        try {
-            inputStream = AudioSystem.getAudioInputStream(new File(songName + ".wav"));
-        } catch (UnsupportedAudioFileException e) {
-            throw new RuntimeException(e);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        AudioFormat audioFormat =
-            new AudioFormat(inputStream.getFormat().getEncoding(), inputStream.getFormat().getSampleRate(),
-                inputStream.getFormat().getSampleSizeInBits(), inputStream.getFormat().getChannels(),
-                inputStream.getFormat().getFrameSize(), inputStream.getFormat().getFrameRate(),
-                inputStream.getFormat().isBigEndian());
-
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             try (Socket socket = serverSocket.accept();
                  BufferedOutputStream outputStream = new BufferedOutputStream(socket.getOutputStream());
-                 InputStream stream = socket.getInputStream();
                  BufferedInputStream bufferedInputStream = new BufferedInputStream(
-                     Files.newInputStream(Path.of(songName + ".wav")))) {
+                     Files.newInputStream(Path.of(Storage.SONGS_FOLDER_NAME + song.getFileName())))) {
 
-                byte[] toWrite = new byte[audioFormat.getFrameSize()];
+                byte[] toWrite = new byte[song.getFrameSize()];
                 while (bufferedInputStream.available() > 0) {
                     int readBytes = bufferedInputStream.read(toWrite, 0, toWrite.length);
 
                     outputStream.write(toWrite, 0, readBytes);
                 }
                 System.out.println("Song Stopped");
+            } catch (SocketException ignored) {
+                //The User has Stopped The Song
+                System.out.println("The User has Stopped The Song");
+                return;
             }
-        } catch (SocketException ignored) {
-            //The User has Stopped The Song
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        System.out.println("Song has ended");
     }
 
-    public static void main(String[] args) {
-        new Thread(new SongStreamer(7778, "songs/Upsurt-Chekai malko")).start();
+    public static void main(String[] args) throws SongNotFoundException {
+        Song song = Song.of("Upsurt-Chekai malko.wav");
+
+        Thread thread = new Thread(new SongStreamer(7778, song));
+        thread.start();
     }
 }
