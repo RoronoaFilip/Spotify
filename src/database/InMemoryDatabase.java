@@ -16,11 +16,9 @@ import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -143,11 +141,7 @@ public class InMemoryDatabase implements Database {
 
     @Override
     public Collection<Song> getMostStreamedSongs(int limit) {
-        List<Song> toSort = new ArrayList<>(songs);
-
-        toSort.sort(Comparator.comparingInt(Song::getStreams).reversed());
-
-        return List.copyOf(toSort.subList(0, limit));
+        return songs.stream().sorted(Comparator.comparingInt(Song::getStreams).reversed()).limit(limit).toList();
     }
 
     @Override
