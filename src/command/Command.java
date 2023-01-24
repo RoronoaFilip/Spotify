@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 public abstract class Command implements Callable<String> {
+    public static final String COMMAND_SPLIT_REGEX = "\\s+";
     protected static final String SUCCESSFUL_LOGIN = "You have logged in successfully";
     protected static final String UNSUCCESSFUL_LOGIN = "You have logged in already";
     protected static final String SUCCESSFUL_LOGOUT = "You have logged out";
@@ -15,9 +16,11 @@ public abstract class Command implements Callable<String> {
     protected static final String USER_DOES_NOT_EXIST = "Such User does not exist";
 
     protected SpotifyServer spotifyServer;
+    private CommandType type;
 
-    protected Command(SpotifyServer spotifyServer) {
+    protected Command(SpotifyServer spotifyServer, CommandType type) {
         this.spotifyServer = spotifyServer;
+        this.type = type;
     }
 
     protected static String constructMessage(List<?> objects) {
@@ -28,5 +31,29 @@ public abstract class Command implements Callable<String> {
         }
 
         return message.toString();
+    }
+
+    public CommandType getType() {
+        return type;
+    }
+
+    protected static String[] split(String line, int limit) {
+        String[] split = line.split(COMMAND_SPLIT_REGEX, limit);
+
+        for (String str : split) {
+            str.strip();
+        }
+
+        return split;
+    }
+
+    protected static String[] split(String line) {
+        String[] split = line.split(COMMAND_SPLIT_REGEX);
+
+        for (String str : split) {
+            str.strip();
+        }
+
+        return split;
     }
 }

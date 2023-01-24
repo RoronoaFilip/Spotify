@@ -1,9 +1,9 @@
 package command.unsafe;
 
 import command.Command;
+import command.CommandType;
 import command.exceptions.UnsuccessfulRegistrationException;
 import server.SpotifyServer;
-import storage.Storage;
 import user.exceptions.UserAlreadyExistsException;
 
 public class RegisterCommand extends Command {
@@ -11,7 +11,7 @@ public class RegisterCommand extends Command {
     private final String password;
 
     public RegisterCommand(String username, String password, SpotifyServer spotifyServer) {
-        super(spotifyServer);
+        super(spotifyServer, CommandType.REGISTER_COMMAND);
         this.username = username;
         this.password = password;
     }
@@ -27,5 +27,15 @@ public class RegisterCommand extends Command {
         }
 
         return message;
+    }
+
+    public static RegisterCommand of(String line, SpotifyServer spotifyServer) {
+        String[] split = split(line);
+
+        if (split.length != 2) {
+            return null;
+        }
+
+        return new RegisterCommand(split[0], split[1], spotifyServer);
     }
 }

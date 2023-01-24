@@ -92,9 +92,9 @@ public class PlaylistBase implements Playlist {
 
     @Override
     public int hashCode() {
-        String nameLowerCase = name.toLowerCase();
+        String nameLoweCase = name.toLowerCase();
 
-        int result = nameLowerCase.hashCode();
+        int result = nameLoweCase.hashCode();
         result = 31 * result + owner.hashCode();
         return result;
     }

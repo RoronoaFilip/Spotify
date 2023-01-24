@@ -1,5 +1,11 @@
 package client;
 
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.Line;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.SourceDataLine;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
@@ -7,6 +13,15 @@ import java.nio.channels.SocketChannel;
 import java.util.Scanner;
 
 public class Client implements Runnable {
+    private static final int ENCODING_INDEX = 0;
+    private static final int SAMPLE_RATE_INDEX = 1;
+    private static final int SAMPLE_SIZE_IN_BITS_INDEX = 2;
+    private static final int CHANNELS_INDEX = 3;
+    private static final int FRAME_SIZE_INDEX = 4;
+    private static final int FRAME_RATE_INDEX = 5;
+    private static final int BIG_ENDIAN_INDEX = 6;
+    private static final int PORT_INDEX = 7;
+
     private static final int SERVER_PORT = 6999;
     private static final String SERVER_HOST = "localhost";
     private static final int BUFFER_SIZE = 512;
@@ -16,17 +31,11 @@ public class Client implements Runnable {
     private String username;
     private String password;
     private boolean end = false;
+    private SourceDataLine sourceDataLine = null;
 
     @Override
     public void run() {
         try (SocketChannel socketChannel = SocketChannel.open(); Scanner scanner = new Scanner(System.in)) {
-
-            System.out.println("Enter Username:");
-            username = scanner.nextLine();
-
-            System.out.println("Enter Password:");
-            password = scanner.nextLine();
-
             socketChannel.connect(new InetSocketAddress(SERVER_HOST, SERVER_PORT));
 
             System.out.println("Connected to the server.");
@@ -35,32 +44,82 @@ public class Client implements Runnable {
                 System.out.println();
                 String message = scanner.nextLine(); // read a line from the console
 
-                System.out.println("Sending message <" + message + "> to the server...");
-
-                if ("disconnect".equals(message) || "stop".equals(message)) {
+                if ("disconnect".equals(message) || "terminate".equals(message)) {
                     end = true;
                 }
 
+                if ("stop".equalsIgnoreCase(message)) {
+                    stopSong();
+                    continue;
+                }
+
+                System.out.println("Sending message <" + message + "> to the server...");
                 writeToServer(message, socketChannel);
 
                 String reply = readServerResponse(socketChannel);
 
-                if (!message.equalsIgnoreCase("play")) {
+                if (!message.startsWith("play ")) {
                     System.out.println("The server replied :" + System.lineSeparator() + reply);
-                    System.out.println();
                 } else {
-                    //TODO: finish
+                    try {
+                        System.out.println("Playing Song:");
+                        constructSourceDataLine(reply);
+                    } catch (LineUnavailableException e) {
+                        System.out.println("Streaming failed");
+                    }
                 }
             }
 
         } catch (IOException e) {
             throw new RuntimeException("There is a problem with the network communication", e);
         }
+
+        stopSong();
+    }
+
+    private void constructSourceDataLine(String reply) throws LineUnavailableException {
+        String[] splitReply = reply.split("\\s+");
+
+        if (splitReply.length != 8) {
+            System.out.println(reply);
+            return;
+        }
+
+        AudioFormat audioFormat =
+            new AudioFormat(new AudioFormat.Encoding(splitReply[ENCODING_INDEX]),
+                Float.parseFloat(splitReply[SAMPLE_RATE_INDEX]),
+                Integer.parseInt(splitReply[SAMPLE_SIZE_IN_BITS_INDEX]),
+                Integer.parseInt(splitReply[CHANNELS_INDEX]),
+                Integer.parseInt(splitReply[FRAME_SIZE_INDEX]),
+                Float.parseFloat(splitReply[FRAME_RATE_INDEX]),
+                Boolean.parseBoolean(splitReply[BIG_ENDIAN_INDEX]));
+
+        int streamingPort = Integer.parseInt(splitReply[PORT_INDEX]);
+
+        Line.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
+
+        sourceDataLine = (SourceDataLine) AudioSystem.getLine(info);
+        sourceDataLine.open();
+        new Thread(new SongListener(streamingPort, sourceDataLine, this)).start();
+    }
+
+    private void stopSong() {
+        if (sourceDataLine == null) {
+            System.out.println("Nothing to Stop");
+            return;
+        }
+
+        sourceDataLine.stop();
+        System.out.println("Song stopped");
+    }
+
+    public void resetSourceDataLine() {
+        sourceDataLine = null;
     }
 
     private void writeToServer(String message, SocketChannel socketChannel) throws IOException {
         buffer.clear(); // switch to writing mode
-        buffer.put(constructMessage(message).getBytes()); // buffer fill
+        buffer.put(message.getBytes()); // buffer fill
         buffer.flip(); // switch to reading mode
         socketChannel.write(buffer); // buffer drain
     }
@@ -73,10 +132,6 @@ public class Client implements Runnable {
         byte[] byteArray = new byte[buffer.remaining()];
         buffer.get(byteArray);
         return new String(byteArray, "UTF-8"); // buffer drain
-    }
-
-    private String constructMessage(String message) {
-        return username + "," + password + ":" + message;
     }
 
     public static void main(String[] args) {

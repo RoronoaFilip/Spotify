@@ -1,6 +1,7 @@
 package command.safe;
 
 import command.Command;
+import command.CommandType;
 import server.SpotifyServer;
 import song.Song;
 
@@ -11,7 +12,7 @@ public class SearchCommand extends Command {
     private final String[] filters;
 
     public SearchCommand(String[] filters, SpotifyServer spotifyServer) {
-        super(spotifyServer);
+        super(spotifyServer, CommandType.SEARCH_COMMAND);
         this.filters = filters;
     }
 
@@ -26,5 +27,19 @@ public class SearchCommand extends Command {
         return "Filtered Songs:" + System.lineSeparator() +
                Command.constructMessage(filteredSongs) +
                System.lineSeparator();
+    }
+
+    public static SearchCommand of(String line, SpotifyServer spotifyServer) {
+        if (line.isBlank()) {
+            return null;
+        }
+
+        String[] split = split(line);
+
+        if (split.length < 1) {
+            return null;
+        }
+
+        return new SearchCommand(split, spotifyServer);
     }
 }

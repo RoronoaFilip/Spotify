@@ -1,6 +1,7 @@
 package command.safe;
 
 import command.Command;
+import command.CommandType;
 import server.SpotifyServer;
 import song.Song;
 
@@ -12,13 +13,13 @@ public class TopSongsCommand extends Command {
     private final int limit;
 
     public TopSongsCommand(int limit, SpotifyServer spotifyServer) {
-        super(spotifyServer);
+        super(spotifyServer, CommandType.TOP_SONGS_COMMAND);
         this.limit = limit;
         all = false;
     }
 
     public TopSongsCommand(boolean all, SpotifyServer spotifyServer) {
-        super(spotifyServer);
+        super(spotifyServer, CommandType.TOP_SONGS_COMMAND);
         limit = 0;
         this.all = all;
     }
@@ -38,5 +39,18 @@ public class TopSongsCommand extends Command {
         }
 
         return "Top Songs: " + System.lineSeparator() + Command.constructMessage(topSongs) + System.lineSeparator();
+    }
+
+    public static TopSongsCommand of(String line, SpotifyServer spotifyServer) {
+        if (line.equalsIgnoreCase("all")) {
+            return new TopSongsCommand(true, spotifyServer);
+        }
+
+        try {
+            int limit = Integer.parseInt(line);
+            return new TopSongsCommand(limit, spotifyServer);
+        } catch (NumberFormatException e) {
+            return null;
+        }
     }
 }

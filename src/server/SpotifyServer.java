@@ -1,6 +1,7 @@
 package server;
 
 import command.Command;
+import command.CommandType;
 import command.creator.CommandCreator;
 import command.executor.CommandExecutor;
 import storage.InMemoryStorage;
@@ -20,8 +21,10 @@ import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeSet;
 
 public class SpotifyServer implements Runnable {
@@ -39,7 +42,9 @@ public class SpotifyServer implements Runnable {
     private final ByteBuffer buffer;
     private Selector selector;
 
-    private final Map<User, Long> currentSession;
+    private final Map<User, Long> streamingPortsByUser;
+    private final Map<User, SelectionKey> selectionKeysByUser;
+    private final Set<Long> currentlyStreamingPorts;
     private final TreeSet<Long> ports;
     private final Object currentSessionLock = new Object();
 
@@ -49,7 +54,9 @@ public class SpotifyServer implements Runnable {
 
         this.buffer = ByteBuffer.allocate(BUFFER_SIZE);
 
-        currentSession = new HashMap<>();
+        streamingPortsByUser = new HashMap<>();
+        selectionKeysByUser = new HashMap<>();
+        currentlyStreamingPorts = new HashSet<>();
         ports = new TreeSet<>();
 
         storage = new InMemoryStorage();
@@ -72,6 +79,7 @@ public class SpotifyServer implements Runnable {
                     Iterator<SelectionKey> keyIterator = selector.selectedKeys().iterator();
                     while (keyIterator.hasNext()) {
                         SelectionKey key = keyIterator.next();
+
                         if (key.isReadable()) {
                             SocketChannel clientChannel = (SocketChannel) key.channel();
 
@@ -83,10 +91,11 @@ public class SpotifyServer implements Runnable {
 
                             String output;
                             try {
-                                Command cmd = CommandCreator.create(clientInput, this);
+                                Command cmd = CommandCreator.create(clientInput, key, this);
+                                checkCommand(cmd, key);
                                 output = commandExecutor.execute(cmd);
-                            } catch (UserNotLoggedInException e) {
-                                output = "You have not logged in";
+                            } catch (UserNotLoggedInException | UserAlreadyLoggedInException e) {
+                                output = e.getMessage();
                             }
 
                             writeClientOutput(clientChannel, output);
@@ -103,6 +112,11 @@ public class SpotifyServer implements Runnable {
         } catch (IOException e) {
             throw new UncheckedIOException("failed to start server", e);
         }
+    }
+
+    private void attach(User user, SelectionKey key) {
+        key.attach(user);
+        selectionKeysByUser.put(user, key);
     }
 
     public void stop() {
@@ -151,42 +165,76 @@ public class SpotifyServer implements Runnable {
         accept.register(selector, SelectionKey.OP_READ);
     }
 
-    public void logIn(User user) throws UserAlreadyLoggedInException, UserNotRegisteredException {
+    private Command checkCommand(Command command, SelectionKey key)
+        throws UserNotLoggedInException, UserAlreadyLoggedInException {
+        if (command == null) {
+            return null;
+        }
+        boolean isLoggedIn = key.attachment() != null;
+
+        if (!isLoggedIn) {
+            if (command.getType() == CommandType.REGISTER_COMMAND
+                || command.getType() == CommandType.LOGIN_COMMAND) {
+                return command;
+            }
+
+            throw new UserNotLoggedInException("You have not logged in");
+        }
+
+        if (command.getType() == CommandType.LOGIN_COMMAND ||
+            command.getType() == CommandType.REGISTER_COMMAND) {
+            throw new UserAlreadyLoggedInException("You have already logged in");
+        }
+
+        return command;
+    }
+
+    public void logIn(User user, SelectionKey key) throws UserAlreadyLoggedInException, UserNotRegisteredException {
+        attachStreamingPort(user);
+        attach(user, key);
+    }
+
+    public void logOut(SelectionKey key) throws UserNotLoggedInException, UserNotRegisteredException {
+        User user = (User) key.attachment();
+
+        detachStreamingPort(user);
+        selectionKeysByUser.remove(user);
+    }
+
+    public void attachStreamingPort(User user) throws UserAlreadyLoggedInException, UserNotRegisteredException {
         synchronized (currentSessionLock) {
             if (!isRegistered(user)) {
                 throw new UserNotRegisteredException("A User with the Name: " + user.username() + " does not exist");
             }
 
-            try {
-                isLoggedIn(user);
-            } catch (UserNotLoggedInException e) {
-                // Ignore - that is what we want
+            if (isLoggedIn(user)) {
+                throw new UserAlreadyLoggedInException("User already logged in");
             }
 
-            if (currentSession.isEmpty()) {
-                currentSession.put(user, STREAMING_PORT);
+            if (streamingPortsByUser.isEmpty()) {
+                streamingPortsByUser.put(user, STREAMING_PORT);
                 ports.add(STREAMING_PORT);
                 return;
             }
 
             long nextKey = ports.last() + 1;
-            currentSession.put(user, nextKey);
+            streamingPortsByUser.put(user, nextKey);
             ports.add(nextKey);
         }
     }
 
-    public void logOut(User user) throws UserNotLoggedInException, UserNotRegisteredException {
+    public void detachStreamingPort(User user) throws UserNotLoggedInException, UserNotRegisteredException {
         synchronized (currentSessionLock) {
             if (!isRegistered(user)) {
                 throw new UserNotRegisteredException("A User with the Name: " + user.username() + " does not exist");
             }
 
-            try {
-                isLoggedIn(user);
-            } catch (UserAlreadyLoggedInException e) {
-                ports.remove(currentSession.get(user));
-                currentSession.remove(user);
+            if (!isLoggedIn(user)) {
+                throw new UserNotLoggedInException("User not logged in");
             }
+
+            ports.remove(streamingPortsByUser.get(user));
+            streamingPortsByUser.remove(user);
         }
     }
 
@@ -194,18 +242,32 @@ public class SpotifyServer implements Runnable {
         return storage.doesUserExist(user);
     }
 
-    public void isLoggedIn(User user) throws UserNotLoggedInException, UserAlreadyLoggedInException {
-        if (!currentSession.containsKey(user)) {
-            throw new UserNotLoggedInException(
-                "A User with Username " + user.username() + " and Password " + user.password() + " has not logged in");
-        }
-
-        throw new UserAlreadyLoggedInException(
-            "A User with Username " + user.username() + " and Password " + user.password() + " has already logged in");
+    public boolean isLoggedIn(User user) {
+        return selectionKeysByUser.containsKey(user);
     }
 
     public long getPort(User user) {
-        return currentSession.get(user);
+        return streamingPortsByUser.get(user);
+    }
+
+    public void addPortStreaming(long port) {
+        if (!ports.contains(port)) {
+            return;
+        }
+
+        currentlyStreamingPorts.add(port);
+    }
+
+    public boolean isPortStreaming(long port) {
+        return currentlyStreamingPorts.contains(port);
+    }
+
+    public void removePortStreaming(long port) {
+        if (!isPortStreaming(port)) {
+            return;
+        }
+
+        currentlyStreamingPorts.remove(port);
     }
 
     public Storage getStorage() {

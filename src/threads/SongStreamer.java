@@ -1,5 +1,6 @@
 package threads;
 
+import server.SpotifyServer;
 import song.Song;
 import song.exceptions.SongNotFoundException;
 import storage.Storage;
@@ -14,16 +15,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 
 public class SongStreamer implements Runnable {
-    int port;
-    Song song;
+    private final int port;
+    private final Song song;
+    private final SpotifyServer spotifyServer;
 
-    public SongStreamer(int port, Song song) {
+    public SongStreamer(int port, Song song, SpotifyServer spotifyServer) {
         this.port = port;
         this.song = song;
+        this.spotifyServer = spotifyServer;
     }
 
     @Override
     public void run() {
+        spotifyServer.addPortStreaming(port);
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             try (Socket socket = serverSocket.accept();
                  BufferedOutputStream outputStream = new BufferedOutputStream(socket.getOutputStream());
@@ -36,23 +40,14 @@ public class SongStreamer implements Runnable {
 
                     outputStream.write(toWrite, 0, readBytes);
                 }
-                System.out.println("Song Stopped");
             } catch (SocketException ignored) {
                 //The User has Stopped The Song
-                System.out.println("The User has Stopped The Song");
-                return;
             }
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            System.out.println("A Problem occurred while streaming Song");
         }
 
+        spotifyServer.removePortStreaming(port);
         System.out.println("Song has ended");
-    }
-
-    public static void main(String[] args) throws SongNotFoundException {
-        Song song = Song.of("Upsurt-Chekai malko.wav");
-
-        Thread thread = new Thread(new SongStreamer(7778, song));
-        thread.start();
     }
 }
