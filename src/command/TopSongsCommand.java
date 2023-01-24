@@ -1,7 +1,7 @@
 package command;
 
+import server.SpotifyServer;
 import song.Song;
-import storage.Storage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,14 +10,14 @@ public class TopSongsCommand extends Command {
     private final boolean all;
     private final int limit;
 
-    public TopSongsCommand(int limit, Storage storage) {
-        super(storage);
+    public TopSongsCommand(int limit, SpotifyServer spotifyServer) {
+        super(spotifyServer);
         this.limit = limit;
         all = false;
     }
 
-    public TopSongsCommand(boolean all, Storage storage) {
-        super(storage);
+    public TopSongsCommand(boolean all, SpotifyServer spotifyServer) {
+        super(spotifyServer);
         limit = 0;
         this.all = all;
     }
@@ -27,9 +27,9 @@ public class TopSongsCommand extends Command {
         List<Song> topSongs;
 
         if (all) {
-            topSongs = new ArrayList<>(storage.getMostStreamedSongs());
+            topSongs = new ArrayList<>(spotifyServer.getStorage().getMostStreamedSongs());
         } else {
-            topSongs = new ArrayList<>(storage.getMostStreamedSongs(limit));
+            topSongs = new ArrayList<>(spotifyServer.getStorage().getMostStreamedSongs(limit));
         }
 
         if (topSongs.isEmpty()) {

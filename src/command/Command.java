@@ -1,7 +1,7 @@
 package command;
 
+import server.SpotifyServer;
 import song.Song;
-import storage.Storage;
 
 import java.util.List;
 import java.util.concurrent.Callable;
@@ -13,17 +13,17 @@ public abstract class Command implements Callable<String> {
     protected static final String UNSUCCESSFUL_REGISTER = "You have registered already";
     protected static final String USER_DOES_NOT_EXIST = "Such User does not exist";
 
-    protected Storage storage;
+    protected SpotifyServer spotifyServer;
 
-    protected Command(Storage storage) {
-        this.storage = storage;
+    protected Command(SpotifyServer spotifyServer) {
+        this.spotifyServer = spotifyServer;
     }
 
     protected static String constructMessage(List<Song> songs) {
         StringBuilder message = new StringBuilder();
 
         for (int i = 0; i < songs.size(); ++i) {
-            message.append(i + 1).append(songs.get(i)).append(System.lineSeparator());
+            message.append(i + 1).append(". ").append(songs.get(i)).append(System.lineSeparator());
         }
 
         return message.toString();

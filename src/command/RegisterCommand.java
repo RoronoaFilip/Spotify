@@ -1,6 +1,7 @@
 package command;
 
 import command.exceptions.UnsuccessfulRegistrationException;
+import server.SpotifyServer;
 import storage.Storage;
 import user.exceptions.UserAlreadyExistsException;
 
@@ -8,8 +9,8 @@ public class RegisterCommand extends Command {
     private final String username;
     private final String password;
 
-    public RegisterCommand(String username, String password, Storage storage) {
-        super(storage);
+    public RegisterCommand(String username, String password, SpotifyServer spotifyServer) {
+        super(spotifyServer);
         this.username = username;
         this.password = password;
     }
@@ -18,7 +19,7 @@ public class RegisterCommand extends Command {
     public String call() throws Exception {
         String message;
         try {
-            storage.registerUser(username, password);
+            spotifyServer.getStorage().registerUser(username, password);
             message = SUCCESSFUL_REGISTER;
         } catch (UserAlreadyExistsException e) {
             throw new UnsuccessfulRegistrationException(UNSUCCESSFUL_REGISTER);

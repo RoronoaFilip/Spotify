@@ -22,7 +22,7 @@ public class PlaylistBase implements Playlist {
         this.owner = owner;
     }
 
-    public PlaylistBase(Set<Song> songs, String name, User owner) {
+    PlaylistBase(Set<Song> songs, String name, User owner) {
         this.songs = songs;
         this.name = name;
         this.owner = owner;

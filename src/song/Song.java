@@ -9,6 +9,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
+import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Song {
@@ -75,6 +76,14 @@ public class Song {
     public String getAudioFormatString() {
         return encoding.toString() + " " + sampleRate + " " + sampleSizeInBits + " " + channels +
                " " + frameSize + " " + frameRate + " " + bigEndian;
+    }
+
+    public boolean doesFilterApply(String filter) {
+        String filterLowerCase = filter.toLowerCase(Locale.ROOT);
+        String nameLowerCase = songName.toLowerCase(Locale.ROOT);
+        String singerLowerCase = singerName.toLowerCase(Locale.ROOT);
+
+        return nameLowerCase.contains(filterLowerCase) || singerLowerCase.contains(filter);
     }
 
     public static Song of(String fileName) throws SongNotFoundException {
