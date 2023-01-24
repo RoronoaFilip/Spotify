@@ -71,7 +71,7 @@ public class Client implements Runnable {
             }
 
         } catch (IOException e) {
-            throw new RuntimeException("There is a problem with the network communication", e);
+            System.out.println("The Server is offline");
         }
 
         stopSong();
