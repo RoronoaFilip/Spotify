@@ -1,16 +1,16 @@
 package command.creator;
 
 import command.Command;
-import command.safe.PlayCommand;
-import command.safe.SearchCommand;
-import command.safe.ShowPlaylistCommand;
-import command.safe.TerminateCommand;
-import command.safe.TopSongsCommand;
-import command.unsafe.AddSongToPlaylistCommand;
-import command.unsafe.CreatePlaylistCommand;
-import command.unsafe.DisconnectCommand;
-import command.unsafe.LoginCommand;
-import command.unsafe.RegisterCommand;
+import command.thread.safe.PlayCommand;
+import command.thread.safe.SearchCommand;
+import command.thread.safe.ShowPlaylistCommand;
+import command.thread.safe.TerminateCommand;
+import command.thread.safe.TopSongsCommand;
+import command.thread.unsafe.AddSongToPlaylistCommand;
+import command.thread.unsafe.CreatePlaylistCommand;
+import command.thread.unsafe.DisconnectCommand;
+import command.thread.unsafe.LoginCommand;
+import command.thread.unsafe.RegisterCommand;
 import server.SpotifyServer;
 import user.User;
 

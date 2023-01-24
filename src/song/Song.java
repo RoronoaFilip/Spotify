@@ -1,7 +1,7 @@
 package song;
 
 import song.exceptions.SongNotFoundException;
-import storage.Storage;
+import database.Database;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioInputStream;
@@ -56,7 +56,7 @@ public class Song {
     }
 
     public void stream() {
-        streams.getAndIncrement();
+        streams.incrementAndGet();
     }
 
     public int getStreams() {
@@ -105,7 +105,7 @@ public class Song {
 
         Song toReturn = null;
         try (AudioInputStream inputStream = AudioSystem.getAudioInputStream(
-            new File(Storage.getSongsFolderName() + fileName))) {
+            new File(Database.getSongsFolderName() + fileName))) {
 
             AudioFormat audioFormat = inputStream.getFormat();
             toReturn = new Song(name, singerName, fileName, audioFormat);

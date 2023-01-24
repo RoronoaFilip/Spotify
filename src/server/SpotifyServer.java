@@ -4,8 +4,8 @@ import command.Command;
 import command.CommandType;
 import command.creator.CommandCreator;
 import command.executor.CommandExecutor;
-import storage.InMemoryStorage;
-import storage.Storage;
+import database.InMemoryDatabase;
+import database.Database;
 import user.User;
 import user.exceptions.UserAlreadyLoggedInException;
 import user.exceptions.UserNotLoggedInException;
@@ -34,7 +34,7 @@ public class SpotifyServer implements Runnable {
     private static final String HOST = "localhost";
 
     private final CommandExecutor commandExecutor;
-    private final Storage storage;
+    private final Database database;
 
     private final int port;
     private boolean isServerWorking;
@@ -59,13 +59,13 @@ public class SpotifyServer implements Runnable {
         currentlyStreamingPorts = new HashSet<>();
         ports = new TreeSet<>();
 
-        storage = new InMemoryStorage();
+        database = new InMemoryDatabase();
         isServerWorking = true;
     }
 
     @Override
     public void run() {
-        try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open(); storage) {
+        try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open(); database) {
             selector = Selector.open();
             configureServerSocketChannel(serverSocketChannel, selector);
 
@@ -239,7 +239,7 @@ public class SpotifyServer implements Runnable {
     }
 
     private boolean isRegistered(User user) {
-        return storage.doesUserExist(user);
+        return database.doesUserExist(user);
     }
 
     public boolean isLoggedIn(User user) {
@@ -270,8 +270,8 @@ public class SpotifyServer implements Runnable {
         currentlyStreamingPorts.remove(port);
     }
 
-    public Storage getStorage() {
-        return storage;
+    public Database getStorage() {
+        return database;
     }
 
     //    public static void main(String[] args) {
