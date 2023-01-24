@@ -24,8 +24,7 @@ public class SearchCommand extends Command {
             return "No Songs Found";
         }
 
-        return "Filtered Songs:" + System.lineSeparator() +
-               Command.constructMessage(filteredSongs) +
+        return "Filtered Songs:" + System.lineSeparator() + Command.constructMessage(filteredSongs) +
                System.lineSeparator();
     }
 

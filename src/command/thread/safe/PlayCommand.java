@@ -2,9 +2,9 @@ package command.thread.safe;
 
 import command.Command;
 import command.CommandType;
+import server.SongStreamer;
 import server.SpotifyServer;
 import server.exceptions.PortCurrentlyStreamingException;
-import server.SongStreamer;
 import song.Song;
 import user.User;
 
@@ -17,7 +17,6 @@ public class PlayCommand extends Command {
         this.fullSongName = fullSongName;
         this.user = user;
     }
-
 
     @Override
     public String call() throws Exception {

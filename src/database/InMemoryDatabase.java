@@ -173,8 +173,7 @@ public class InMemoryDatabase implements Database {
         return false;
     }
 
-    @Override
-    public void shutdown() {
+    private void shutdown() {
         saveUsersToFile();
         writePlaylistsToFile();
     }

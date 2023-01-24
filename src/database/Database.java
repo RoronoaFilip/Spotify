@@ -1,13 +1,13 @@
 package database;
 
+import playlist.Playlist;
 import playlist.exceptions.NoSuchPlaylistException;
 import playlist.exceptions.PlaylistAlreadyExistsException;
+import song.Song;
 import song.exceptions.SongNotFoundException;
+import user.User;
 import user.exceptions.UserAlreadyExistsException;
 import user.exceptions.UserNotRegisteredException;
-import playlist.Playlist;
-import song.Song;
-import user.User;
 
 import java.io.Closeable;
 import java.util.Collection;
@@ -20,7 +20,7 @@ public interface Database extends AutoCloseable, Closeable {
     Song getSongBy(String fullName) throws SongNotFoundException;
 
     Playlist createPlaylist(String playlistName, User owner)
-        throws UserNotRegisteredException,  PlaylistAlreadyExistsException;
+        throws UserNotRegisteredException, PlaylistAlreadyExistsException;
 
     Playlist getPlaylist(String playlistName, User owner) throws NoSuchPlaylistException;
 
@@ -37,10 +37,4 @@ public interface Database extends AutoCloseable, Closeable {
     boolean doesSongExist(Song song);
 
     boolean doesUserExist(User user);
-
-    void shutdown();
-
-    static String getSongsFolderName() {
-        return SONGS_FOLDER_NAME;
-    }
 }

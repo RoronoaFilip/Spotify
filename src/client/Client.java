@@ -28,8 +28,6 @@ public class Client implements Runnable {
 
     private final ByteBuffer buffer = ByteBuffer.allocateDirect(BUFFER_SIZE);
 
-    private String username;
-    private String password;
     private boolean end = false;
     private SourceDataLine sourceDataLine = null;
 

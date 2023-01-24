@@ -1,8 +1,7 @@
 package server;
 
-import server.SpotifyServer;
-import song.Song;
 import database.Database;
+import song.Song;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

@@ -39,6 +39,10 @@ public class ShowPlaylistCommand extends Command {
     }
 
     public static ShowPlaylistCommand of(String line, SpotifyServer spotifyServer) {
+        if (line.isBlank()) {
+            return null;
+        }
+
         String[] split = split(line, 2);
 
         if (split.length == 1) {
