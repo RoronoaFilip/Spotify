@@ -2,13 +2,12 @@ package command.executor;
 
 
 import command.Command;
-import storage.Storage;
 
 public class CommandExecutor {
 
     public String execute(Command cmd) {
         if (cmd == null) {
-            return "test";
+            return "Invalid Command";
         }
 
         String message;

@@ -4,6 +4,7 @@ import song.Song;
 import song.exceptions.SongNotFoundException;
 import user.User;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -51,13 +52,18 @@ public class PlaylistBase implements Playlist {
     }
 
     @Override
-    public void addSong(Song song) {
+    public synchronized void addSong(Song song) {
         songs.add(song);
     }
 
     @Override
     public boolean containsSong(Song song) {
         return songs.contains(song);
+    }
+
+    @Override
+    public Collection<Song> getSongs() {
+        return songs;
     }
 
     @Override
@@ -79,14 +85,16 @@ public class PlaylistBase implements Playlist {
 
         PlaylistBase that = (PlaylistBase) o;
 
-        if (!name.equals(that.name))
+        if (!name.equalsIgnoreCase(that.name))
             return false;
         return owner.equals(that.owner);
     }
 
     @Override
     public int hashCode() {
-        int result = name.hashCode();
+        String nameLowerCase = name.toLowerCase();
+
+        int result = nameLowerCase.hashCode();
         result = 31 * result + owner.hashCode();
         return result;
     }

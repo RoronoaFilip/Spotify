@@ -31,13 +31,10 @@ public class SongListener implements Runnable {
             byte[] toWrite = new byte[dataLine.getFormat().getFrameSize()];
             dataLine.start();
             try {
-                while (true) {
+                do {
                     int readBytes = bufferedInputStream.read(toWrite, 0, toWrite.length);
                     dataLine.write(toWrite, 0, readBytes);
-                    if (!dataLine.isRunning()) {
-                        break;
-                    }
-                }
+                } while (dataLine.isRunning());
             } catch (IllegalArgumentException ignored) {
                 //BufferedInputStream has reached the end
             }

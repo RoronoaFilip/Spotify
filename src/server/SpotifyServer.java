@@ -1,10 +1,6 @@
 package server;
 
-import command.AddSongToPlaylistCommand;
-import command.CreatePlaylistCommand;
-import command.LoginCommand;
-import command.RegisterCommand;
-import command.SearchCommand;
+import command.Command;
 import command.creator.CommandCreator;
 import command.executor.CommandExecutor;
 import storage.InMemoryStorage;
@@ -85,13 +81,15 @@ public class SpotifyServer implements Runnable {
                                 continue;
                             }
 
-                            if (clientInput.equals("stop")) {
-                                stop();
+                            String output;
+                            try {
+                                Command cmd = CommandCreator.create(clientInput, this);
+                                output = commandExecutor.execute(cmd);
+                            } catch (UserNotLoggedInException e) {
+                                output = "You have not logged in";
                             }
 
-                            String output = commandExecutor.execute(CommandCreator.create(clientInput));
                             writeClientOutput(clientChannel, output);
-
                         } else if (key.isAcceptable()) {
                             accept(selector, key);
                         }
@@ -111,12 +109,6 @@ public class SpotifyServer implements Runnable {
         this.isServerWorking = false;
         if (selector != null && selector.isOpen()) {
             selector.wakeup();
-        }
-
-        try {
-            storage.close();
-        } catch (IOException e) {
-            System.out.println("Error occurred while closing Storage");
         }
     }
 
@@ -161,7 +153,9 @@ public class SpotifyServer implements Runnable {
 
     public void logIn(User user) throws UserAlreadyLoggedInException, UserNotRegisteredException {
         synchronized (currentSessionLock) {
-            isRegistered(user);
+            if (!isRegistered(user)) {
+                throw new UserNotRegisteredException("A User with the Name: " + user.username() + " does not exist");
+            }
 
             try {
                 isLoggedIn(user);
@@ -181,8 +175,12 @@ public class SpotifyServer implements Runnable {
         }
     }
 
-    private void logOut(User user) throws UserNotLoggedInException {
+    public void logOut(User user) throws UserNotLoggedInException, UserNotRegisteredException {
         synchronized (currentSessionLock) {
+            if (!isRegistered(user)) {
+                throw new UserNotRegisteredException("A User with the Name: " + user.username() + " does not exist");
+            }
+
             try {
                 isLoggedIn(user);
             } catch (UserAlreadyLoggedInException e) {
@@ -192,20 +190,18 @@ public class SpotifyServer implements Runnable {
         }
     }
 
-    private boolean isRegistered(User user) throws UserNotRegisteredException {
+    private boolean isRegistered(User user) {
         return storage.doesUserExist(user);
     }
 
-    private boolean isLoggedIn(User user) throws UserNotLoggedInException, UserAlreadyLoggedInException {
+    public void isLoggedIn(User user) throws UserNotLoggedInException, UserAlreadyLoggedInException {
         if (!currentSession.containsKey(user)) {
             throw new UserNotLoggedInException(
-                "A User with Username " + user.username() + " and Password " + user.password() +
-                " has not logged in");
+                "A User with Username " + user.username() + " and Password " + user.password() + " has not logged in");
         }
 
         throw new UserAlreadyLoggedInException(
-            "A User with Username " + user.username() + " and Password " + user.password() +
-            " has already logged in");
+            "A User with Username " + user.username() + " and Password " + user.password() + " has already logged in");
     }
 
     public long getPort(User user) {
@@ -224,37 +220,38 @@ public class SpotifyServer implements Runnable {
 
     public static void main(String[] args) {
         SpotifyServer spotifyServer1 = new SpotifyServer(6999, new CommandExecutor());
-
-        CommandExecutor executor = new CommandExecutor();
-        User user = new User("filip", "123");
-
-        RegisterCommand registerCommand = new RegisterCommand("filip", "123", spotifyServer1);
-        System.out.println(executor.execute(registerCommand));
-
-        LoginCommand loginCommand = new LoginCommand("filip", "123", spotifyServer1);
-        System.out.println(executor.execute(loginCommand));
-
-        LoginCommand loginCommand2 = new LoginCommand("filip", "123", spotifyServer1);
-        System.out.println(executor.execute(loginCommand2));
-
-        CreatePlaylistCommand command = new CreatePlaylistCommand("filipPlaylist", user, spotifyServer1);
-        System.out.println(executor.execute(command));
-
-        AddSongToPlaylistCommand addSongToPlaylistCommand =
-            new AddSongToPlaylistCommand("Upsurt-Chekai malko", "filipPlaylist", spotifyServer1);
-        System.out.println(executor.execute(addSongToPlaylistCommand));
-
-        AddSongToPlaylistCommand addSongToPlaylistCommand1 =
-            new AddSongToPlaylistCommand("alabala", "filipPlaylist", spotifyServer1);
-        System.out.println(executor.execute(addSongToPlaylistCommand1));
-
-        AddSongToPlaylistCommand addSongToPlaylistCommand2 =
-            new AddSongToPlaylistCommand("Upsurt-Chekai malko", "alabala", spotifyServer1);
-        System.out.println(executor.execute(addSongToPlaylistCommand2));
-
-        SearchCommand searchCommand = new SearchCommand("mAlKo", spotifyServer1);
-        System.out.println(executor.execute(searchCommand));
-
-        spotifyServer1.stop();
+        new Thread(spotifyServer1).start();
+        //
+        //        CommandExecutor executor = new CommandExecutor();
+        //        User user = new User("filip", "123");
+        //
+        //        RegisterCommand registerCommand = new RegisterCommand("filip", "123", spotifyServer1);
+        //        System.out.println(executor.execute(registerCommand));
+        //
+        //        LoginCommand loginCommand = new LoginCommand("filip", "123", spotifyServer1);
+        //        System.out.println(executor.execute(loginCommand));
+        //
+        //        LoginCommand loginCommand2 = new LoginCommand("filip", "123", spotifyServer1);
+        //        System.out.println(executor.execute(loginCommand2));
+        //
+        //        CreatePlaylistCommand command = new CreatePlaylistCommand("filipPlaylist", user, spotifyServer1);
+        //        System.out.println(executor.execute(command));
+        //
+        //        AddSongToPlaylistCommand addSongToPlaylistCommand =
+        //            new AddSongToPlaylistCommand("Upsurt-Chekai malko", "filipPlaylist", spotifyServer1);
+        //        System.out.println(executor.execute(addSongToPlaylistCommand));
+        //
+        //        AddSongToPlaylistCommand addSongToPlaylistCommand1 =
+        //            new AddSongToPlaylistCommand("alabala", "filipPlaylist", spotifyServer1);
+        //        System.out.println(executor.execute(addSongToPlaylistCommand1));
+        //
+        //        AddSongToPlaylistCommand addSongToPlaylistCommand2 =
+        //            new AddSongToPlaylistCommand("Upsurt-Chekai malko", "alabala", spotifyServer1);
+        //        System.out.println(executor.execute(addSongToPlaylistCommand2));
+        //
+        //        SearchCommand searchCommand = new SearchCommand("mAlKo", spotifyServer1);
+        //        System.out.println(executor.execute(searchCommand));
+        //
+        //        spotifyServer1.stop();
     }
 }

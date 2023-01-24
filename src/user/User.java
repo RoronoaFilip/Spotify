@@ -20,7 +20,7 @@ public record User(String username, String password) {
 
         User user = (User) o;
 
-        if (!username.equals(user.username))
+        if (!username.equalsIgnoreCase(user.username))
             return false;
 
         return true;
@@ -28,7 +28,9 @@ public record User(String username, String password) {
 
     @Override
     public int hashCode() {
-        return username.hashCode();
+        String usernameLowerCase = username.toLowerCase();
+
+        return usernameLowerCase.hashCode();
     }
 
     @Override

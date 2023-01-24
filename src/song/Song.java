@@ -40,9 +40,10 @@ public class Song {
         frameRate = format.getFrameRate();
         bigEndian = format.isBigEndian();
 
+        this.singerName = singerName;
         this.songName = songName;
         this.fileName = fileName;
-        this.singerName = singerName;
+
         streams = new AtomicInteger(0);
     }
 
@@ -50,6 +51,7 @@ public class Song {
         this.singerName = singerName;
         this.songName = songName;
         fileName = "";
+
         streams = new AtomicInteger(0);
     }
 
@@ -74,16 +76,23 @@ public class Song {
     }
 
     public String getAudioFormatString() {
-        return encoding.toString() + " " + sampleRate + " " + sampleSizeInBits + " " + channels +
-               " " + frameSize + " " + frameRate + " " + bigEndian;
+        return encoding.toString() + " " + sampleRate + " " + sampleSizeInBits + " " + channels + " " + frameSize +
+               " " + frameRate + " " + bigEndian;
     }
 
-    public boolean doesFilterApply(String filter) {
-        String filterLowerCase = filter.toLowerCase(Locale.ROOT);
+    public boolean doFiltersApply(String... filters) {
         String nameLowerCase = songName.toLowerCase(Locale.ROOT);
         String singerLowerCase = singerName.toLowerCase(Locale.ROOT);
 
-        return nameLowerCase.contains(filterLowerCase) || singerLowerCase.contains(filter);
+        for (String filter : filters) {
+            String filterLowerCase = filter.toLowerCase(Locale.ROOT);
+
+            if (nameLowerCase.contains(filterLowerCase) || singerLowerCase.contains(filterLowerCase)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public static Song of(String fileName) throws SongNotFoundException {
@@ -120,15 +129,18 @@ public class Song {
 
         Song song = (Song) o;
 
-        if (!songName.equals(song.songName))
+        if (!songName.equalsIgnoreCase(song.songName))
             return false;
-        return singerName.equals(song.singerName);
+        return singerName.equalsIgnoreCase(song.singerName);
     }
 
     @Override
     public int hashCode() {
-        int result = songName.hashCode();
-        result = 31 * result + singerName.hashCode();
+        String songNameLowerCase = songName.toLowerCase();
+        String singerNameLowerCase = songName.toLowerCase();
+
+        int result = songNameLowerCase.hashCode();
+        result = 31 * result + singerNameLowerCase.hashCode();
         return result;
     }
 
