@@ -2,9 +2,7 @@ package command.thread.unsafe;
 
 import command.Command;
 import command.CommandType;
-import command.exceptions.UnsuccessfulRegistrationException;
 import server.SpotifyServer;
-import user.exceptions.UserAlreadyExistsException;
 
 public class RegisterCommand extends Command {
     private final String username;
@@ -18,15 +16,9 @@ public class RegisterCommand extends Command {
 
     @Override
     public String call() throws Exception {
-        String message;
-        try {
-            spotifyServer.getStorage().registerUser(username, password);
-            message = SUCCESSFUL_REGISTER;
-        } catch (UserAlreadyExistsException e) {
-            throw new UnsuccessfulRegistrationException(UNSUCCESSFUL_REGISTER);
-        }
+        spotifyServer.getDatabase().registerUser(username, password);
 
-        return message;
+        return SUCCESSFUL_REGISTER;
     }
 
     public static RegisterCommand of(String line, SpotifyServer spotifyServer) {

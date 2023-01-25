@@ -1,5 +1,6 @@
-package server;
+package server.streamer;
 
+import server.StreamingSpotifyServer;
 import song.Song;
 
 import java.io.BufferedInputStream;
@@ -14,9 +15,9 @@ import java.nio.file.Path;
 public class SongStreamer implements Runnable {
     private final int port;
     private final Song song;
-    private final SpotifyServer spotifyServer;
+    private final StreamingSpotifyServer spotifyServer;
 
-    public SongStreamer(int port, Song song, SpotifyServer spotifyServer) {
+    public SongStreamer(int port, Song song, StreamingSpotifyServer spotifyServer) {
         this.port = port;
         this.song = song;
         this.spotifyServer = spotifyServer;
@@ -25,11 +26,12 @@ public class SongStreamer implements Runnable {
     @Override
     public void run() {
         spotifyServer.addPortStreaming(port);
+
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             try (Socket socket = serverSocket.accept();
                  BufferedOutputStream outputStream = new BufferedOutputStream(socket.getOutputStream());
-                 BufferedInputStream bufferedInputStream = new BufferedInputStream(
-                     Files.newInputStream(Path.of(spotifyServer.getStorage().getSongsFolder() + song.getFileName())))) {
+                 BufferedInputStream bufferedInputStream = new BufferedInputStream(Files.newInputStream(
+                     Path.of(spotifyServer.getDatabase().getSongsFolder() + song.getFileName())))) {
 
                 byte[] toWrite = new byte[song.getFrameSize()];
                 while (bufferedInputStream.available() > 0) {
@@ -46,6 +48,7 @@ public class SongStreamer implements Runnable {
 
         song.stream();
         spotifyServer.removePortStreaming(port);
+
         System.out.println("Song has ended");
     }
 }

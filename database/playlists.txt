@@ -1,4 +1,4 @@
-filip,123:българско:BNR - BG РЕАЛНОСТ 2,Upsurt - Chekai malko,Dim4ou - BIG MEECH
-zoro,12:zoro1:BNR - BG РЕАЛНОСТ 2
-filip,123:myPlaylist:Dim4ou - BIG MEECH
+filip,123:българско:BNR-BG РЕАЛНОСТ 2.wav,Upsurt-Chekai malko.wav,Dim4ou-BIG MEECH.wav
+zoro,12:zoro1:BNR-BG РЕАЛНОСТ 2.wav
+filip,123:myPlaylist:Dim4ou-BIG MEECH.wav
 zoro,12:myPlaylist:

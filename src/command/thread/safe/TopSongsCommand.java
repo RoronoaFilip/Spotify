@@ -29,9 +29,9 @@ public class TopSongsCommand extends Command {
         List<Song> topSongs;
 
         if (all) {
-            topSongs = new ArrayList<>(spotifyServer.getStorage().getMostStreamedSongs());
+            topSongs = new ArrayList<>(spotifyServer.getDatabase().getMostStreamedSongs());
         } else {
-            topSongs = new ArrayList<>(spotifyServer.getStorage().getMostStreamedSongs(limit));
+            topSongs = new ArrayList<>(spotifyServer.getDatabase().getMostStreamedSongs(limit));
         }
 
         if (topSongs.isEmpty()) {

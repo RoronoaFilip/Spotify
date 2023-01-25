@@ -29,9 +29,9 @@ public class SearchCommand extends Command {
         List<Song> filteredSongs;
 
         if (all) {
-            filteredSongs = new ArrayList<>(spotifyServer.getStorage().getAllSongs());
+            filteredSongs = new ArrayList<>(spotifyServer.getDatabase().getAllSongs());
         } else {
-            filteredSongs = new ArrayList<>(spotifyServer.getStorage().filterSongsBasedOn(filters));
+            filteredSongs = new ArrayList<>(spotifyServer.getDatabase().filterSongsBasedOn(filters));
         }
 
         if (filteredSongs.isEmpty()) {

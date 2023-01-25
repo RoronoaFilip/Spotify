@@ -29,9 +29,9 @@ public class ShowPlaylistCommand extends Command {
         Playlist playlist;
 
         if (owner == null) {
-            playlist = spotifyServer.getStorage().getPlaylistByName(playlistName);
+            playlist = spotifyServer.getDatabase().getPlaylistByName(playlistName);
         } else {
-            playlist = spotifyServer.getStorage().getPlaylist(playlistName, owner);
+            playlist = spotifyServer.getDatabase().getPlaylist(playlistName, owner);
         }
 
         return "Playlist " + playlist.getName() + " by " + playlist.getOwner().username() + ":" +

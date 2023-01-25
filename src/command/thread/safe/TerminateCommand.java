@@ -11,7 +11,7 @@ public class TerminateCommand extends Command {
 
     @Override
     public String call() throws Exception {
-        spotifyServer.stop();
+        spotifyServer.terminate();
 
         return "Server stopped successfully";
     }

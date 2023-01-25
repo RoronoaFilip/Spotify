@@ -11,11 +11,11 @@ import command.thread.unsafe.CreatePlaylistCommand;
 import command.thread.unsafe.DisconnectCommand;
 import command.thread.unsafe.LoginCommand;
 import command.thread.unsafe.RegisterCommand;
-import server.SpotifyServer;
+import server.StreamingSpotifyServer;
 import user.User;
 
 public class CommandCreator {
-    public static Command create(String input, User user, SpotifyServer spotifyServer) {
+    public static Command create(String input, User user, StreamingSpotifyServer spotifyServer) {
         if (input == null || input.isBlank()) {
             return null;
         }

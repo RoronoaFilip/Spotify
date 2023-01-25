@@ -17,7 +17,7 @@ public class CreatePlaylistCommand extends Command {
 
     @Override
     public String call() throws Exception {
-        spotifyServer.getStorage().createPlaylist(playlistName, owner);
+        spotifyServer.getDatabase().createPlaylist(playlistName, owner);
 
         return "Playlist with Name: " + playlistName + " by " + owner.username() + " was created";
     }

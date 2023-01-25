@@ -22,8 +22,8 @@ public class AddSongToPlaylistCommand extends Command {
 
     @Override
     public String call() throws Exception {
-        Song song = spotifyServer.getStorage().getSongBy(fullSongName);
-        Playlist playlist = spotifyServer.getStorage().getPlaylistByName(playlistName);
+        Song song = spotifyServer.getDatabase().getSongBy(fullSongName);
+        Playlist playlist = spotifyServer.getDatabase().getPlaylistByName(playlistName);
 
         if (!playlist.getOwner().equals(user)) {
             throw new InvalidPlaylistOperationException("You are not the Playlist Owner");

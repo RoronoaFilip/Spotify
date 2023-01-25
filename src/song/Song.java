@@ -8,7 +8,6 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -32,7 +31,7 @@ public class Song {
     private float frameRate;
     private boolean bigEndian;
 
-    Song(String songName, String singerName, String fileName, AudioFormat format) {
+    public Song(String songName, String singerName, String fileName, AudioFormat format) {
         encoding = format.getEncoding();
         sampleRate = format.getSampleRate();
         sampleSizeInBits = format.getSampleSizeInBits();
@@ -101,43 +100,26 @@ public class Song {
 
         String[] splitWholeName = wholeName.split(SINGER_NAME_REGEX);
 
+        if (splitWholeName.length != 2) {
+            throw new SongNotFoundException("A Song File with the Name: " + fileName + " does not exist");
+        }
+
         String name = splitWholeName[NAME];
         String singerName = splitWholeName[SINGER];
 
-        Song toReturn = null;
+        Song toReturn;
         try (AudioInputStream inputStream = AudioSystem.getAudioInputStream(
             new File(folderName + fileName))) {
 
             AudioFormat audioFormat = inputStream.getFormat();
             toReturn = new Song(name, singerName, fileName, audioFormat);
 
-        } catch (UnsupportedAudioFileException e) {
+        } catch (UnsupportedAudioFileException | IOException e) {
             throw new SongNotFoundException("A Song with the Name: " + name + " does not exist");
-        } catch (IOException e) {
-            throw new RuntimeException(e);
         }
 
         return toReturn;
     }
-
-    public static Song of(String fullSongName, Collection<Song> songs) throws SongNotFoundException {
-        String[] splitWholeName = fullSongName.split(SINGER_NAME_REGEX);
-
-        String name = splitWholeName[NAME];
-        String singerName = splitWholeName[SINGER];
-
-        Song toSearch = new Song(name, singerName);
-
-        for (Song song : songs) {
-            if (song.equals(toSearch)) {
-                return song;
-            }
-        }
-
-        throw new SongNotFoundException(
-            "A Song with the Name: " + name + " by " + singerName + " was not found in the Database");
-    }
-
 
     @Override
     public boolean equals(Object o) {

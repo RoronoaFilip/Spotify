@@ -251,7 +251,7 @@ public class InMemoryDatabase implements Database {
         String fileName = databaseFolder + playlistsFileName;
         try (BufferedReader reader = Files.newBufferedReader(Path.of(fileName))) {
 
-            playlists = reader.lines().map(line -> PlaylistBase.of(line, songs)).collect(Collectors.toSet());
+            playlists = reader.lines().map(line -> PlaylistBase.of(line, songsFolder)).collect(Collectors.toSet());
 
         } catch (IOException ignored) {
             //Database file does not exist yet

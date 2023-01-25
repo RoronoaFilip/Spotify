@@ -2,9 +2,8 @@ package command.thread.safe;
 
 import command.Command;
 import command.CommandType;
-import server.SongStreamer;
-import server.SpotifyServer;
-import server.exceptions.PortCurrentlyStreamingException;
+import server.StreamingSpotifyServer;
+import server.streamer.SongStreamer;
 import song.Song;
 import user.User;
 
@@ -12,7 +11,7 @@ public class PlayCommand extends Command {
     private final String fullSongName;
     private final User user;
 
-    public PlayCommand(String fullSongName, User user, SpotifyServer spotifyServer) {
+    public PlayCommand(String fullSongName, User user, StreamingSpotifyServer spotifyServer) {
         super(spotifyServer, CommandType.PLAY_COMMAND);
         this.fullSongName = fullSongName;
         this.user = user;
@@ -20,23 +19,24 @@ public class PlayCommand extends Command {
 
     @Override
     public String call() throws Exception {
-        Song toPlay = spotifyServer.getStorage().getSongBy(fullSongName);
+        StreamingSpotifyServer streamingSpotifyServer = (StreamingSpotifyServer) spotifyServer;
 
-        long userStreamingPort = spotifyServer.getPort(user);
+        Song toPlay = streamingSpotifyServer.getDatabase().getSongBy(fullSongName);
 
-        if (spotifyServer.isPortStreaming(userStreamingPort)) {
-            throw new PortCurrentlyStreamingException(
-                "You are currently listening to a Song. Stop the current one and than try again");
-        }
+        long userStreamingPort = streamingSpotifyServer.getPort(user);
 
-        SongStreamer streamer = new SongStreamer((int) userStreamingPort, toPlay, spotifyServer);
+        streamingSpotifyServer.isPortStreaming(userStreamingPort);
 
-        new Thread(streamer).start();
+        SongStreamer streamer = new SongStreamer((int) userStreamingPort, toPlay, streamingSpotifyServer);
+
+        Thread thread = new Thread(streamer);
+        thread.setDaemon(true);
+        thread.start();
 
         return toPlay.getAudioFormatString() + " " + userStreamingPort;
     }
 
-    public static PlayCommand of(String line, User user, SpotifyServer spotifyServer) {
+    public static PlayCommand of(String line, User user, StreamingSpotifyServer spotifyServer) {
         if (line.isBlank()) {
             return null;
         }

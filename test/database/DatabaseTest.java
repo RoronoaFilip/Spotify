@@ -39,7 +39,7 @@ public class DatabaseTest {
     private static Song song3;
 
     static {
-        database = new InMemoryDatabase("songsTestFolder/", "testDatabaseFolder/", "testUsersFile.txt",
+        database = new InMemoryDatabase("songsTestFolderToDelete/", "testDatabaseFolder/", "testUsersFile.txt",
             "testPlaylistsFile.txt");
         // Database will have 0 songs
 
@@ -207,6 +207,13 @@ public class DatabaseTest {
 
         Collection<Song> expected3 = List.of(song1, song3);
         assertTrue(expected3.containsAll(database.filterSongsBasedOn("1", "3")), "The Returned Songs were not correct");
+    }
+
+    @Test
+    void testDoesUserExistWorkCorrectly() {
+        assertTrue(database.doesUserExist(user), "False was returned when a User exists");
+        assertFalse(database.doesUserExist(new User("Unknown", "Unknown")),
+            "True was returned when a User does not exists");
     }
 
     @Test
