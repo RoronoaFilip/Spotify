@@ -3,7 +3,7 @@ package server;
 import server.exceptions.PortCurrentlyStreamingException;
 import user.User;
 
-public interface StreamingSpotifyServer extends SpotifyServer {
+public interface SpotifyServerStreamingPermission extends SpotifyServerTerminatePermission {
     void addPortStreaming(long port);
 
     void isPortStreaming(long port) throws PortCurrentlyStreamingException;

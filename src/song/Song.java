@@ -108,8 +108,7 @@ public class Song {
         String singerName = splitWholeName[SINGER];
 
         Song toReturn;
-        try (AudioInputStream inputStream = AudioSystem.getAudioInputStream(
-            new File(folderName + fileName))) {
+        try (AudioInputStream inputStream = AudioSystem.getAudioInputStream(new File(folderName + fileName))) {
 
             AudioFormat audioFormat = inputStream.getFormat();
             toReturn = new Song(name, singerName, fileName, audioFormat);
@@ -158,33 +157,5 @@ public class Song {
         }
 
         return fileName.substring(0, indexOfLastDot);
-    }
-
-    public AudioFormat.Encoding getEncoding() {
-        return encoding;
-    }
-
-    public float getSampleRate() {
-        return sampleRate;
-    }
-
-    public int getSampleSizeInBits() {
-        return sampleSizeInBits;
-    }
-
-    public int getChannels() {
-        return channels;
-    }
-
-    public int getFrameSize() {
-        return frameSize;
-    }
-
-    public float getFrameRate() {
-        return frameRate;
-    }
-
-    public boolean isBigEndian() {
-        return bigEndian;
     }
 }

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class SearchCommand extends Command {
+    public static final String COMMAND = "search";
     private final String[] filters;
     private final boolean all;
 
@@ -38,8 +39,7 @@ public class SearchCommand extends Command {
             return "No Songs Found";
         }
 
-        return "Found Songs:" + System.lineSeparator() + Command.constructMessage(filteredSongs) +
-               System.lineSeparator();
+        return "Found Songs:" + System.lineSeparator() + Command.constructMessage(filteredSongs);
     }
 
     public static SearchCommand of(String line, SpotifyServer spotifyServer) {
@@ -58,5 +58,9 @@ public class SearchCommand extends Command {
         }
 
         return new SearchCommand(split, spotifyServer);
+    }
+
+    public boolean isAll() {
+        return all;
     }
 }

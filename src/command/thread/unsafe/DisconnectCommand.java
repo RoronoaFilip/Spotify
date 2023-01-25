@@ -6,6 +6,7 @@ import server.SpotifyServer;
 import user.User;
 
 public class DisconnectCommand extends Command {
+    public static final String COMMAND = "disconnect";
     private final SpotifyServer spotifyServer;
     private final User user;
 

@@ -5,6 +5,7 @@ import command.CommandType;
 import server.SpotifyServer;
 
 public class RegisterCommand extends Command {
+    public static final String COMMAND = "register";
     private final String username;
     private final String password;
 

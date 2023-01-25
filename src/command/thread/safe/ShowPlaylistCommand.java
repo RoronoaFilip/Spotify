@@ -9,6 +9,7 @@ import user.User;
 import java.util.List;
 
 public class ShowPlaylistCommand extends Command {
+    public static final String COMMAND = "show-playlist";
     private final String playlistName;
     private final User owner;
 
@@ -56,5 +57,9 @@ public class ShowPlaylistCommand extends Command {
         }
 
         return null;
+    }
+
+    public boolean hasOwner() {
+        return owner != null;
     }
 }

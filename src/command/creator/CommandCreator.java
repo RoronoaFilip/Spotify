@@ -11,20 +11,20 @@ import command.thread.unsafe.CreatePlaylistCommand;
 import command.thread.unsafe.DisconnectCommand;
 import command.thread.unsafe.LoginCommand;
 import command.thread.unsafe.RegisterCommand;
-import server.StreamingSpotifyServer;
+import server.DefaultSpotifyServer;
 import user.User;
 
 public class CommandCreator {
-    public static Command create(String input, User user, StreamingSpotifyServer spotifyServer) {
+    public static Command create(String input, User user, DefaultSpotifyServer spotifyServer) {
         if (input == null || input.isBlank()) {
             return null;
         }
 
-        if (input.equalsIgnoreCase("terminate")) {
+        if (input.equalsIgnoreCase(TerminateCommand.COMMAND)) {
             return new TerminateCommand(spotifyServer);
         }
 
-        if (input.equalsIgnoreCase("disconnect")) {
+        if (input.equalsIgnoreCase(DisconnectCommand.COMMAND)) {
             return new DisconnectCommand(user, spotifyServer);
         }
 
@@ -39,14 +39,14 @@ public class CommandCreator {
         String commandContent = commandSplit[1];
 
         return switch (command) {
-            case "register" -> RegisterCommand.of(commandContent, spotifyServer);
-            case "login" -> LoginCommand.of(commandContent, spotifyServer);
-            case "search" -> SearchCommand.of(commandContent, spotifyServer);
-            case "top" -> TopSongsCommand.of(commandContent, spotifyServer);
-            case "create-playlist" -> CreatePlaylistCommand.of(commandContent, user, spotifyServer);
-            case "add-song-to" -> AddSongToPlaylistCommand.of(commandContent, user, spotifyServer);
-            case "show-playlist" -> ShowPlaylistCommand.of(commandContent, spotifyServer);
-            case "play" -> PlayCommand.of(commandContent, user, spotifyServer);
+            case PlayCommand.COMMAND -> PlayCommand.of(commandContent, user, spotifyServer);
+            case SearchCommand.COMMAND -> SearchCommand.of(commandContent, spotifyServer);
+            case ShowPlaylistCommand.COMMAND -> ShowPlaylistCommand.of(commandContent, spotifyServer);
+            case TopSongsCommand.COMMAND -> TopSongsCommand.of(commandContent, spotifyServer);
+            case AddSongToPlaylistCommand.COMMAND -> AddSongToPlaylistCommand.of(commandContent, user, spotifyServer);
+            case CreatePlaylistCommand.COMMAND -> CreatePlaylistCommand.of(commandContent, user, spotifyServer);
+            case LoginCommand.COMMAND -> LoginCommand.of(commandContent, spotifyServer);
+            case RegisterCommand.COMMAND -> RegisterCommand.of(commandContent, spotifyServer);
             default -> null;
         };
     }

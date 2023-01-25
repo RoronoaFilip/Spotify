@@ -1,6 +1,6 @@
 package server.streamer;
 
-import server.StreamingSpotifyServer;
+import server.SpotifyServerStreamingPermission;
 import song.Song;
 
 import java.io.BufferedInputStream;
@@ -15,9 +15,9 @@ import java.nio.file.Path;
 public class SongStreamer implements Runnable {
     private final int port;
     private final Song song;
-    private final StreamingSpotifyServer spotifyServer;
+    private final SpotifyServerStreamingPermission spotifyServer;
 
-    public SongStreamer(int port, Song song, StreamingSpotifyServer spotifyServer) {
+    public SongStreamer(int port, Song song, SpotifyServerStreamingPermission spotifyServer) {
         this.port = port;
         this.song = song;
         this.spotifyServer = spotifyServer;

@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class TopSongsCommand extends Command {
+    public static final String COMMAND = "top";
     private final boolean all;
     private final int limit;
 
@@ -52,5 +53,9 @@ public class TopSongsCommand extends Command {
         } catch (NumberFormatException e) {
             return null;
         }
+    }
+
+    public boolean isAll() {
+        return all;
     }
 }

@@ -6,6 +6,7 @@ import server.SpotifyServer;
 import user.User;
 
 public class LoginCommand extends Command {
+    public static final String COMMAND = "login";
     private final User user;
     private boolean successful = false;
 

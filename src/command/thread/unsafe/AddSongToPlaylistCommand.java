@@ -4,11 +4,13 @@ import command.Command;
 import command.CommandType;
 import playlist.Playlist;
 import playlist.exceptions.InvalidPlaylistOperationException;
+import playlist.exceptions.NoSuchPlaylistException;
 import server.SpotifyServer;
 import song.Song;
 import user.User;
 
 public class AddSongToPlaylistCommand extends Command {
+    public static final String COMMAND = "add-song-to";
     private final String fullSongName;
     private final String playlistName;
     private final User user;
@@ -23,13 +25,14 @@ public class AddSongToPlaylistCommand extends Command {
     @Override
     public String call() throws Exception {
         Song song = spotifyServer.getDatabase().getSongBy(fullSongName);
-        Playlist playlist = spotifyServer.getDatabase().getPlaylistByName(playlistName);
 
-        if (!playlist.getOwner().equals(user)) {
-            throw new InvalidPlaylistOperationException("You are not the Playlist Owner");
+        try {
+            Playlist playlist = spotifyServer.getDatabase().getPlaylist(playlistName, user);
+            playlist.addSong(song);
+
+        } catch (NoSuchPlaylistException e) {
+            throw new InvalidPlaylistOperationException("You do not own a Playlist with the Name: " + playlistName);
         }
-
-        playlist.addSong(song);
 
         return "Song added successfully";
     }

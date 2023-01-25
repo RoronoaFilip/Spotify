@@ -14,6 +14,4 @@ public interface SpotifyServer extends Runnable {
     void logOut(User user) throws UserNotLoggedInException, UserNotRegisteredException;
 
     boolean isLoggedIn(User user);
-
-    void terminate();
 }

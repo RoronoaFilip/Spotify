@@ -6,6 +6,7 @@ import server.SpotifyServer;
 import user.User;
 
 public class CreatePlaylistCommand extends Command {
+    public static final String COMMAND = "create-playlist";
     private final String playlistName;
     private final User owner;
 
