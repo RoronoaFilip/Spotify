@@ -258,3 +258,5 @@ lib
 *.zip
 storage
 songs
+songsTestFolder
+database
