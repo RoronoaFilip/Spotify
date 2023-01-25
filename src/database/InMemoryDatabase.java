@@ -23,10 +23,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class InMemoryDatabase implements Database {
-    private static final String SONGS_FOLDER = "songs/";
-    private static final String STORAGE_FOLDER = "database/";
-    private static final String USERS_FILE_NAME = "users.txt";
-    private static final String PLAYLISTS_FILE_NAME = "playlists.txt";
+    private String songsFolder = "songs/";
+    private String databaseFolder = "database/";
+    private String usersFileName = "users.txt";
+    private String playlistsFileName = "playlists.txt";
 
     private static final String SPACE_REGEX = "\\s+";
     private static final String UNDERLINE_REGEX = "_";
@@ -37,14 +37,19 @@ public class InMemoryDatabase implements Database {
     private Set<Playlist> playlists;
     private final Object playlistLock = new Object();
 
-    public InMemoryDatabase() {
+    public InMemoryDatabase(String songsFolder, String databaseFolder, String usersFileName, String playlistsFileName) {
+        this.songsFolder = songsFolder;
+        this.databaseFolder = databaseFolder;
+        this.usersFileName = usersFileName;
+        this.playlistsFileName = playlistsFileName;
+
         users = new HashSet<>();
         songs = new HashSet<>();
         playlists = new HashSet<>();
 
+        readSongsFromFolder();
         readUsersFromFile();
         readPlaylistsFromFile();
-        readSongsFromFolder();
     }
 
     @Override
@@ -58,6 +63,15 @@ public class InMemoryDatabase implements Database {
                 users.add(toRegister);
             }
         }
+    }
+
+    @Override
+    public void addSong(Song song) {
+        if (doesSongExist(song)) {
+            return;
+        }
+
+        songs.add(song);
     }
 
     @Override
@@ -92,12 +106,12 @@ public class InMemoryDatabase implements Database {
 
         Playlist playlist = new PlaylistBase(playlistName, owner);
 
-        synchronized (playlistLock) {
-            if (playlists.contains(playlist)) {
-                throw new PlaylistAlreadyExistsException(
-                    "The User: " + owner.username() + " already has a Playlist with the Name: " + playlistName);
-            }
+        if (doesPlaylistExist(playlist)) {
+            throw new PlaylistAlreadyExistsException(
+                "The User: " + owner.username() + " already has a Playlist with the Name: " + playlistName);
+        }
 
+        synchronized (playlistLock) {
             playlists.add(playlist);
         }
 
@@ -150,6 +164,11 @@ public class InMemoryDatabase implements Database {
     }
 
     @Override
+    public Collection<Song> getAllSongs() {
+        return songs;
+    }
+
+    @Override
     public boolean doesSongExist(Song song) {
         return songs.contains(song);
     }
@@ -198,7 +217,7 @@ public class InMemoryDatabase implements Database {
     }
 
     private void readUsersFromFile() {
-        String fileName = STORAGE_FOLDER + USERS_FILE_NAME;
+        String fileName = databaseFolder + usersFileName;
         try (BufferedReader reader = Files.newBufferedReader(Path.of(fileName))) {
 
             users = reader.lines().map(User::of).collect(Collectors.toSet());
@@ -209,8 +228,8 @@ public class InMemoryDatabase implements Database {
     }
 
     private void saveUsersToFile() {
-        String fileName = STORAGE_FOLDER + USERS_FILE_NAME;
-        Path of = Path.of(STORAGE_FOLDER);
+        String fileName = databaseFolder + usersFileName;
+        Path of = Path.of(databaseFolder);
         try {
             if (!Files.exists(of)) {
                 Files.createDirectories(of);
@@ -229,10 +248,10 @@ public class InMemoryDatabase implements Database {
     }
 
     private void readPlaylistsFromFile() {
-        String fileName = STORAGE_FOLDER + PLAYLISTS_FILE_NAME;
+        String fileName = databaseFolder + playlistsFileName;
         try (BufferedReader reader = Files.newBufferedReader(Path.of(fileName))) {
 
-            playlists = reader.lines().map(PlaylistBase::of).collect(Collectors.toSet());
+            playlists = reader.lines().map(line -> PlaylistBase.of(line, songs)).collect(Collectors.toSet());
 
         } catch (IOException ignored) {
             //Database file does not exist yet
@@ -240,7 +259,7 @@ public class InMemoryDatabase implements Database {
     }
 
     private void writePlaylistsToFile() {
-        String fileName = STORAGE_FOLDER + PLAYLISTS_FILE_NAME;
+        String fileName = databaseFolder + playlistsFileName;
         try (BufferedWriter bufferedWriter = Files.newBufferedWriter(Path.of(fileName))) {
 
             for (Playlist playlist : playlists) {
@@ -253,16 +272,18 @@ public class InMemoryDatabase implements Database {
     }
 
     private void readSongsFromFolder() {
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Path.of(SONGS_FOLDER))) {
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Path.of(songsFolder))) {
 
             for (Path filePath : directoryStream) {
                 if (!Files.isDirectory(filePath)) {
                     String fileName = filePath.getFileName().toString();
-                    songs.add(Song.of(fileName));
+                    songs.add(Song.of(songsFolder, fileName));
                 }
             }
 
-        } catch (IOException | SongNotFoundException e) {
+        } catch (IOException e) {
+            System.out.println("The Songs Folder could not be opened");
+        } catch (SongNotFoundException e) {
             System.out.println("A SongFile was not Found"); // This should not happen in this method
         }
     }
@@ -274,5 +295,22 @@ public class InMemoryDatabase implements Database {
     @Override
     public void close() {
         shutdown();
+    }
+
+    @Override
+    public String getSongsFolder() {
+        return songsFolder;
+    }
+
+    public String getDatabaseFolder() {
+        return databaseFolder;
+    }
+
+    public String getUsersFileName() {
+        return usersFileName;
+    }
+
+    public String getPlaylistsFileName() {
+        return playlistsFileName;
     }
 }

@@ -14,10 +14,8 @@ import command.thread.unsafe.RegisterCommand;
 import server.SpotifyServer;
 import user.User;
 
-import java.nio.channels.SelectionKey;
-
 public class CommandCreator {
-    public static Command create(String input, SelectionKey key, SpotifyServer spotifyServer) {
+    public static Command create(String input, User user, SpotifyServer spotifyServer) {
         if (input == null || input.isBlank()) {
             return null;
         }
@@ -27,7 +25,7 @@ public class CommandCreator {
         }
 
         if (input.equalsIgnoreCase("disconnect")) {
-            return new DisconnectCommand(key, spotifyServer);
+            return new DisconnectCommand(user, spotifyServer);
         }
 
         String[] commandSplit = split(input, Command.COMMAND_SPLIT_REGEX, 2);
@@ -40,14 +38,9 @@ public class CommandCreator {
 
         String commandContent = commandSplit[1];
 
-        User user = null;
-        if (key.attachment() != null) {
-            user = (User) key.attachment();
-        }
-
         return switch (command) {
             case "register" -> RegisterCommand.of(commandContent, spotifyServer);
-            case "login" -> LoginCommand.of(commandContent, key, spotifyServer);
+            case "login" -> LoginCommand.of(commandContent, spotifyServer);
             case "search" -> SearchCommand.of(commandContent, spotifyServer);
             case "top" -> TopSongsCommand.of(commandContent, spotifyServer);
             case "create-playlist" -> CreatePlaylistCommand.of(commandContent, user, spotifyServer);

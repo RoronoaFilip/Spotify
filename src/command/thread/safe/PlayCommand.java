@@ -33,8 +33,6 @@ public class PlayCommand extends Command {
 
         new Thread(streamer).start();
 
-        toPlay.stream();
-
         return toPlay.getAudioFormatString() + " " + userStreamingPort;
     }
 

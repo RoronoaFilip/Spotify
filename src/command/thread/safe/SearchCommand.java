@@ -10,27 +10,45 @@ import java.util.List;
 
 public class SearchCommand extends Command {
     private final String[] filters;
+    private final boolean all;
 
     public SearchCommand(String[] filters, SpotifyServer spotifyServer) {
         super(spotifyServer, CommandType.SEARCH_COMMAND);
         this.filters = filters;
+        all = false;
+    }
+
+    public SearchCommand(boolean all, SpotifyServer spotifyServer) {
+        super(spotifyServer, CommandType.SEARCH_COMMAND);
+        this.filters = null;
+        this.all = all;
     }
 
     @Override
     public String call() {
-        List<Song> filteredSongs = new ArrayList<>(spotifyServer.getStorage().filterSongsBasedOn(filters));
+        List<Song> filteredSongs;
+
+        if (all) {
+            filteredSongs = new ArrayList<>(spotifyServer.getStorage().getAllSongs());
+        } else {
+            filteredSongs = new ArrayList<>(spotifyServer.getStorage().filterSongsBasedOn(filters));
+        }
 
         if (filteredSongs.isEmpty()) {
             return "No Songs Found";
         }
 
-        return "Filtered Songs:" + System.lineSeparator() + Command.constructMessage(filteredSongs) +
+        return "Found Songs:" + System.lineSeparator() + Command.constructMessage(filteredSongs) +
                System.lineSeparator();
     }
 
     public static SearchCommand of(String line, SpotifyServer spotifyServer) {
         if (line.isBlank()) {
             return null;
+        }
+
+        if (line.equalsIgnoreCase("all")) {
+            return new SearchCommand(true, spotifyServer);
         }
 
         String[] split = split(line);

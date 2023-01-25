@@ -29,20 +29,21 @@ public class PlaylistBase implements Playlist {
         this.owner = owner;
     }
 
-    public static Playlist of(String line) {
+    public static Playlist of(String line, Collection<Song> songsInDatabase) {
         String[] ownerSongsSplit = line.split(OWNER_SONGS_REGEX, SPLIT_SIZE_LIMIT);
 
         User owner = User.of(ownerSongsSplit[0]);
         String playlistName = ownerSongsSplit[1];
 
-        String[] songsSplit = ownerSongsSplit[2].split(",");
         Set<Song> songSet = new HashSet<>();
+
+        String[] songsSplit = ownerSongsSplit[2].split(",");
         for (String songLine : songsSplit) {
             try {
                 if (songLine.isBlank()) {
                     continue;
                 }
-                songSet.add(Song.of(songLine));
+                songSet.add(Song.of(songLine, songsInDatabase));
             } catch (SongNotFoundException e) {
                 // Skip song that isn't in database
             }
@@ -102,6 +103,6 @@ public class PlaylistBase implements Playlist {
     @Override
     public String toString() {
         return owner.toString() + OWNER_SONGS_REGEX + name + OWNER_SONGS_REGEX +
-               songs.stream().map(Song::getFileName).collect(Collectors.joining(",")) + System.lineSeparator();
+               songs.stream().map(Song::toString).collect(Collectors.joining(",")) + System.lineSeparator();
     }
 }

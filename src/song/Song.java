@@ -1,6 +1,5 @@
 package song;
 
-import database.Database;
 import song.exceptions.SongNotFoundException;
 
 import javax.sound.sampled.AudioFormat;
@@ -9,11 +8,13 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import java.io.File;
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Locale;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class Song {
-    public static final String SINGER_NAME_REGEX = "-";
+    public static final String SINGER_NAME_REGEX = "-|\\s+-\\s+";
+    public static final String SINGER_NAME_CONCATENATION = " - ";
     private static final int SINGER = 0;
     private static final int NAME = 1;
 
@@ -95,7 +96,7 @@ public class Song {
         return false;
     }
 
-    public static Song of(String fileName) throws SongNotFoundException {
+    public static Song of(String folderName, String fileName) throws SongNotFoundException {
         String wholeName = getNameWithoutExtension(fileName);
 
         String[] splitWholeName = wholeName.split(SINGER_NAME_REGEX);
@@ -105,7 +106,7 @@ public class Song {
 
         Song toReturn = null;
         try (AudioInputStream inputStream = AudioSystem.getAudioInputStream(
-            new File(Database.SONGS_FOLDER_NAME + fileName))) {
+            new File(folderName + fileName))) {
 
             AudioFormat audioFormat = inputStream.getFormat();
             toReturn = new Song(name, singerName, fileName, audioFormat);
@@ -117,6 +118,24 @@ public class Song {
         }
 
         return toReturn;
+    }
+
+    public static Song of(String fullSongName, Collection<Song> songs) throws SongNotFoundException {
+        String[] splitWholeName = fullSongName.split(SINGER_NAME_REGEX);
+
+        String name = splitWholeName[NAME];
+        String singerName = splitWholeName[SINGER];
+
+        Song toSearch = new Song(name, singerName);
+
+        for (Song song : songs) {
+            if (song.equals(toSearch)) {
+                return song;
+            }
+        }
+
+        throw new SongNotFoundException(
+            "A Song with the Name: " + name + " by " + singerName + " was not found in the Database");
     }
 
 
@@ -146,11 +165,15 @@ public class Song {
 
     @Override
     public String toString() {
-        return singerName + SINGER_NAME_REGEX + songName;
+        return singerName + SINGER_NAME_CONCATENATION + songName;
     }
 
     private static String getNameWithoutExtension(String fileName) {
         int indexOfLastDot = fileName.lastIndexOf('.');
+
+        if (indexOfLastDot == -1) { // Not a File Name
+            return fileName;
+        }
 
         return fileName.substring(0, indexOfLastDot);
     }

@@ -4,26 +4,25 @@ import command.Command;
 import command.CommandType;
 import command.exceptions.UnsuccessfulLogOutException;
 import server.SpotifyServer;
+import user.User;
 import user.exceptions.UserNotLoggedInException;
 import user.exceptions.UserNotRegisteredException;
 
-import java.nio.channels.SelectionKey;
-
 public class DisconnectCommand extends Command {
     private final SpotifyServer spotifyServer;
-    private final SelectionKey key;
+    private final User user;
 
-    public DisconnectCommand(SelectionKey key, SpotifyServer spotifyServer) {
+    public DisconnectCommand(User user, SpotifyServer spotifyServer) {
         super(spotifyServer, CommandType.DISCONNECT_COMMAND);
         this.spotifyServer = spotifyServer;
-        this.key = key;
+        this.user = user;
     }
 
     @Override
     public String call() throws Exception {
         String message;
         try {
-            spotifyServer.logOut(key);
+            spotifyServer.logOut(user);
             message = SUCCESSFUL_LOGOUT;
         } catch (UserNotRegisteredException e) {
             throw new UserNotRegisteredException(USER_DOES_NOT_EXIST);

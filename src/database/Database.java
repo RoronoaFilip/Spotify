@@ -13,9 +13,14 @@ import java.io.Closeable;
 import java.util.Collection;
 
 public interface Database extends AutoCloseable, Closeable {
-    String SONGS_FOLDER_NAME = "songs/";
+    String SONGS_FOLDER_DEFAULT = "songs/";
+    String DATABASE_FOLDER_DEFAULT = "database/";
+    String USERS_FILE_NAME_DEFAULT = "users.txt";
+    String PLAYLISTS_FILE_NAME_DEFAULT = "playlists.txt";
 
     void registerUser(String username, String password) throws UserAlreadyExistsException;
+
+    void addSong(Song song);
 
     Song getSongBy(String fullName) throws SongNotFoundException;
 
@@ -34,7 +39,11 @@ public interface Database extends AutoCloseable, Closeable {
 
     Collection<Song> filterSongsBasedOn(String... filter);
 
+    Collection<Song> getAllSongs();
+
     boolean doesSongExist(Song song);
 
     boolean doesUserExist(User user);
+
+    String getSongsFolder();
 }

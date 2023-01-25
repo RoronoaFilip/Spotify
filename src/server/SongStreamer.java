@@ -1,6 +1,5 @@
 package server;
 
-import database.Database;
 import song.Song;
 
 import java.io.BufferedInputStream;
@@ -30,7 +29,7 @@ public class SongStreamer implements Runnable {
             try (Socket socket = serverSocket.accept();
                  BufferedOutputStream outputStream = new BufferedOutputStream(socket.getOutputStream());
                  BufferedInputStream bufferedInputStream = new BufferedInputStream(
-                     Files.newInputStream(Path.of(Database.SONGS_FOLDER_NAME + song.getFileName())))) {
+                     Files.newInputStream(Path.of(spotifyServer.getStorage().getSongsFolder() + song.getFileName())))) {
 
                 byte[] toWrite = new byte[song.getFrameSize()];
                 while (bufferedInputStream.available() > 0) {
@@ -45,6 +44,7 @@ public class SongStreamer implements Runnable {
             System.out.println("A Problem occurred while streaming Song");
         }
 
+        song.stream();
         spotifyServer.removePortStreaming(port);
         System.out.println("Song has ended");
     }
