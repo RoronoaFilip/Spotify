@@ -191,8 +191,8 @@ public class InMemoryDatabase implements Database {
     private void shutdown() {
         writeCollectionToFile(users, databaseFolder, usersFileName);
 
-        Set<Playlist> allPlaylists = playlistsByUser.entrySet().stream().flatMap(entry -> entry.getValue().stream())
-            .collect(Collectors.toSet());
+        Set<Playlist> allPlaylists =
+            playlistsByUser.entrySet().stream().flatMap(entry -> entry.getValue().stream()).collect(Collectors.toSet());
 
         writeCollectionToFile(allPlaylists, databaseFolder, playlistsFileName);
     }
@@ -248,16 +248,17 @@ public class InMemoryDatabase implements Database {
     private void writeCollectionToFile(Collection<?> objects, String folder, String fileName) {
         String fullFileName = folder + fileName;
         Path databaseFolderPath = Path.of(folder);
-        try (BufferedWriter bufferedWriter = Files.newBufferedWriter(Path.of(fullFileName))) {
-
+        try {
             if (!Files.exists(databaseFolderPath)) {
                 Files.createDirectories(databaseFolderPath);
             }
+            try (BufferedWriter bufferedWriter = Files.newBufferedWriter(Path.of(fullFileName))) {
 
-            for (Object object : objects) {
-                bufferedWriter.write(object.toString() + System.lineSeparator());
+
+                for (Object object : objects) {
+                    bufferedWriter.write(object.toString() + System.lineSeparator());
+                }
             }
-
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
