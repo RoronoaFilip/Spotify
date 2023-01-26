@@ -5,6 +5,13 @@ import command.CommandType;
 import server.SpotifyServer;
 import user.User;
 
+/**
+ * Create Playlist Command. Represents a Request from the User for a Playlist to be shown
+ * <p>
+ * A Valid Create Playlist Request looks like this: <br>
+ * create-playlist "playlist-name" <br>
+ * </p>
+ */
 public class CreatePlaylistCommand extends Command {
     public static final String COMMAND = "create-playlist";
     private final String playlistName;
@@ -20,7 +27,7 @@ public class CreatePlaylistCommand extends Command {
     public String call() throws Exception {
         spotifyServer.getDatabase().createPlaylist(playlistName, owner);
 
-        return "Playlist with Name: " + playlistName + " by " + owner.username() + " was created";
+        return "Playlist with Name: " + playlistName + " by " + owner.email() + " was created";
     }
 
     public static CreatePlaylistCommand of(String line, User owner, SpotifyServer spotifyServer) {

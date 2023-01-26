@@ -5,6 +5,13 @@ import command.CommandType;
 import server.SpotifyServer;
 import user.User;
 
+/**
+ * Disconnect Command. Represents a Request from the User to log out
+ * <p>
+ * A Valid Disconnect Request looks like this: <br>
+ * disconnect
+ * </p>
+ */
 public class DisconnectCommand extends Command {
     public static final String COMMAND = "disconnect";
     private final SpotifyServer spotifyServer;

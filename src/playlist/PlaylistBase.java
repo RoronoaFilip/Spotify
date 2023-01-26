@@ -17,18 +17,38 @@ public class PlaylistBase implements Playlist {
     private final String name;
     private final User owner;
 
+    /**
+     * Constructs a new empty Playlist
+     *
+     * @param name  the Playlist Name
+     * @param owner the Owner of the Playlist
+     */
     public PlaylistBase(String name, User owner) {
         songs = new HashSet<>();
         this.name = name;
         this.owner = owner;
     }
 
+    /**
+     * Constructs a Playlist read from a File
+     *
+     * @param songs the Songs in the Playlist
+     * @param name  the Playlist Name
+     * @param owner the Owner of the Playlist
+     */
     PlaylistBase(Set<Song> songs, String name, User owner) {
         this.songs = songs;
         this.name = name;
         this.owner = owner;
     }
 
+    /**
+     * Constructs a Song from a Line equivalent to this Classed toString Method
+     *
+     * @param line       the Line to be parsed
+     * @param folderName the Folder to read Songs from using the Song Class' static factory of Method
+     * @return a Playlist including the Songs it contains
+     */
     public static Playlist of(String line, String folderName) {
         String[] ownerSongsSplit = line.split(OWNER_SONGS_REGEX, SPLIT_SIZE_LIMIT);
 
@@ -100,6 +120,19 @@ public class PlaylistBase implements Playlist {
         return result;
     }
 
+    /**
+     * Construct a line with the Playlist Information to be saved in a File<br>
+     * <p>
+     * The Constructed Line has the following Order:<br>
+     * "owner":"playlistName":"comma-separated File Names of the Songs in it"
+     * </p>
+     * <p>
+     * A Line example:<br>
+     * filip,123:myPlaylist:БОРО ПЪРВИ - ТЕЛЕФОН СЪС КОПЧЕТА.wav,Dim4ou-BIG MEECH.wav,BNR - AVANTIM.wav
+     * </p>
+     *
+     * @return a Concatenated String with all the Playlist Info
+     */
     @Override
     public String toString() {
         return owner.toString() + OWNER_SONGS_REGEX + name + OWNER_SONGS_REGEX +

@@ -8,17 +8,32 @@ import song.Song;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Top Songs Command. Represents a Request from the User for a Top Streamed Songs to be shown
+ * <p>
+ * A Valid Top Songs Request looks like this: <br>
+ * top "n" -> shows top n Songs sorted by Streams<br>
+ * top all -> shows all Songs sorted by Streams
+ * </p>
+ */
 public class TopSongsCommand extends Command {
     public static final String COMMAND = "top";
+    private static final String ALL_COMMAND = "all";
     private final boolean all;
     private final int limit;
 
+    /**
+     * Top N Command
+     */
     public TopSongsCommand(int limit, SpotifyServer spotifyServer) {
         super(spotifyServer, CommandType.TOP_SONGS_COMMAND);
         this.limit = limit;
         all = false;
     }
 
+    /**
+     * Top all Command
+     */
     public TopSongsCommand(boolean all, SpotifyServer spotifyServer) {
         super(spotifyServer, CommandType.TOP_SONGS_COMMAND);
         limit = 0;
@@ -39,11 +54,11 @@ public class TopSongsCommand extends Command {
             return "No Songs Found";
         }
 
-        return "Top Songs: " + System.lineSeparator() + Command.constructMessage(topSongs) + System.lineSeparator();
+        return "Top Songs: " + System.lineSeparator() + Command.constructMessage(topSongs);
     }
 
     public static TopSongsCommand of(String line, SpotifyServer spotifyServer) {
-        if (line.equalsIgnoreCase("all")) {
+        if (line.equalsIgnoreCase(ALL_COMMAND)) {
             return new TopSongsCommand(true, spotifyServer);
         }
 

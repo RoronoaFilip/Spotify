@@ -7,6 +7,13 @@ import server.streamer.SongStreamer;
 import song.Song;
 import user.User;
 
+/**
+ * Play Command. Represents a Request from the User for a Song to be played
+ * <p>
+ * A Valid Play Request looks like this: <br>
+ * play "song-name"
+ * </p>
+ */
 public class PlayCommand extends Command {
     public static final String COMMAND = "play";
     private final String fullSongName;

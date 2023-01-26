@@ -12,6 +12,28 @@ import java.net.SocketException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+/**
+ * A Thread that reads a Song from the File System and sends the read Info through
+ * a blocking java.net Communication.<br>
+ * The Thread has SpotifyServerStreaming Permission so that it can mark a specific Port as
+ * "Currently Streaming" in the Server so that another SongStreamer is not started for the same Port.
+ *
+ * <p>
+ * If the Song is stopped from the other side of the java.net Communication
+ * (the Thread on the other Side stops, which would trigger a {@code SocketException} in this Thread)
+ * or when the Song Reading Stream on this side ends,
+ * the Port is marked as free a SongStreamer can be started again for that Port
+ * </p>
+ *
+ * <p>
+ * When the Song ends/is stopped its Streams Counter is incremented
+ * </p>
+ *
+ * <p>
+ * This Thread should be marked as a Daemon Thread before it is started so that it doesn't
+ * stall the Program if it ends while this Thread is Running
+ * </p>
+ */
 public class SongStreamer implements Runnable {
     private final int port;
     private final Song song;

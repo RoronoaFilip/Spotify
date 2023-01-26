@@ -12,6 +12,7 @@ import user.User;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CommandCreatorTest {
@@ -153,5 +154,18 @@ public class CommandCreatorTest {
         Command actual = CommandCreator.create(REGISTER_COMMAND, user, spotifyServer);
 
         assertEquals(CommandType.REGISTER_COMMAND, actual.getType(), "Register Command not parsed correctly");
+    }
+
+    @Test
+    void testCreateRecognizesUnknownCommand() {
+        Command actual1 = CommandCreator.create("", user, spotifyServer);
+        Command actual2 = CommandCreator.create(null, user, spotifyServer);
+        Command actual3 = CommandCreator.create("add-song-to", user, spotifyServer);
+        Command actual4 = CommandCreator.create("unknown command written here", user, spotifyServer);
+
+        assertNull(actual1, "Unknown Command not parsed correctly");
+        assertNull(actual2, "Unknown Command not parsed correctly");
+        assertNull(actual3, "Unknown Command not parsed correctly");
+        assertNull(actual4, "Unknown Command not parsed correctly");
     }
 }

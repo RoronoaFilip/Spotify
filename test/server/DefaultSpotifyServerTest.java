@@ -150,8 +150,7 @@ public class DefaultSpotifyServerTest {
     }
 
     @Test
-    void testRemovePortStreamingRemovesPort()
-        throws UserAlreadyLoggedInException, UserNotRegisteredException {
+    void testRemovePortStreamingRemovesPort() throws UserAlreadyLoggedInException, UserNotRegisteredException {
         Mockito.when(database.doesUserExist(user)).thenReturn(true);
         spotifyServer.logIn(user);
         long userPort = spotifyServer.getPort(user);

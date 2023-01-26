@@ -18,6 +18,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
@@ -26,7 +27,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class DatabaseTest {
-    private static Database database;
+    private static InMemoryDatabase database;
 
     private static final String TEST_STRING = "testString";
     private static final String REGISTERED = "registeredUser";
@@ -81,11 +82,22 @@ public class DatabaseTest {
     }
 
     @Test
-    void testRegisterUserThrowsUserAlreadyExistsExceptionForAlreadyRegisteredUser() throws UserAlreadyExistsException {
-        database.registerUser(TEST_STRING, TEST_STRING);
+    void testRegisterUserRegisterUserCorrectly() throws UserAlreadyExistsException {
+        database.registerUser("a New User", "a New User");
 
-        assertThrows(UserAlreadyExistsException.class, () -> database.registerUser(TEST_STRING, TEST_STRING),
-            "UserAlreadyExistsException expected");
+        User newUser = new User("a New User", "a New User");
+
+        Set<User> registeredUsers = database.getUsers();
+
+        assertTrue(registeredUsers.contains(newUser), "User not registered");
+    }
+
+    @Test
+    void testRegisterUserThrowsUserAlreadyExistsExceptionForAlreadyRegisteredUser() throws UserAlreadyExistsException {
+        database.registerUser("Throw Exception", "Throw Exception");
+
+        assertThrows(UserAlreadyExistsException.class,
+            () -> database.registerUser("Throw Exception", "Throw Exception"), "UserAlreadyExistsException expected");
     }
 
     @Test

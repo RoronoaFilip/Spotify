@@ -8,7 +8,17 @@ import song.Song;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Search Command. Represents a Search Request from the User
+ * <p>
+ * A Valid Search Request looks like this: <br>
+ * search "filter1 filter2 .. filterN"<br>
+ * search all -> returns all Songs in the Database
+ * </p>
+ */
 public class SearchCommand extends Command {
+    private static final int COMMAND_MIN_LENGTH = 1;
+    public static final String ALL_COMMAND = "all";
     public static final String COMMAND = "search";
     private final String[] filters;
     private final boolean all;
@@ -47,13 +57,13 @@ public class SearchCommand extends Command {
             return null;
         }
 
-        if (line.equalsIgnoreCase("all")) {
+        if (line.equalsIgnoreCase(ALL_COMMAND)) {
             return new SearchCommand(true, spotifyServer);
         }
 
         String[] split = split(line);
 
-        if (split.length < 1) {
+        if (split.length < COMMAND_MIN_LENGTH) {
             return null;
         }
 

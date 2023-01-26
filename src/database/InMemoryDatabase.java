@@ -18,7 +18,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Collection;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -26,7 +28,7 @@ public class InMemoryDatabase implements Database {
     private String songsFolder = "songs/";
     private String databaseFolder = "database/";
     private String usersFileName = "users.txt";
-    private String playlistsFileName = "playlists.txt";
+    private String playlistsFileName = "playlistsByUser.txt";
 
     private static final String SPACE_REGEX = "\\s+";
     private static final String UNDERLINE_REGEX = "_";
@@ -34,7 +36,7 @@ public class InMemoryDatabase implements Database {
     private Set<User> users;
     private final Object usersRegisterLock = new Object();
     private final Set<Song> songs;
-    private Set<Playlist> playlists;
+    private Map<User, Set<Playlist>> playlistsByUser;
     private final Object playlistLock = new Object();
 
     public InMemoryDatabase(String songsFolder, String databaseFolder, String usersFileName, String playlistsFileName) {
@@ -45,7 +47,7 @@ public class InMemoryDatabase implements Database {
 
         users = new HashSet<>();
         songs = new HashSet<>();
-        playlists = new HashSet<>();
+        playlistsByUser = new HashMap<>();
 
         readSongsFromFolder();
         readUsersFromFile();
@@ -53,8 +55,8 @@ public class InMemoryDatabase implements Database {
     }
 
     @Override
-    public void registerUser(String username, String password) throws UserAlreadyExistsException {
-        User toRegister = new User(username, password);
+    public void registerUser(String email, String password) throws UserAlreadyExistsException {
+        User toRegister = new User(email, password);
 
         synchronized (usersRegisterLock) {
             try {
@@ -108,11 +110,12 @@ public class InMemoryDatabase implements Database {
 
         if (doesPlaylistExist(playlist)) {
             throw new PlaylistAlreadyExistsException(
-                "The User: " + owner.username() + " already has a Playlist with the Name: " + playlistName);
+                "The User: " + owner.email() + " already has a Playlist with the Name: " + playlistName);
         }
 
         synchronized (playlistLock) {
-            playlists.add(playlist);
+            playlistsByUser.putIfAbsent(owner, new HashSet<>());
+            playlistsByUser.get(owner).add(playlist);
         }
 
         return playlist;
@@ -122,30 +125,23 @@ public class InMemoryDatabase implements Database {
     public Playlist getPlaylist(String playlistName, User owner) throws NoSuchPlaylistException {
         Playlist toFind = new PlaylistBase(playlistName, owner);
 
-        for (Playlist playlist : playlists) {
+        Set<Playlist> userPlaylists = playlistsByUser.get(owner);
+
+        for (Playlist playlist : userPlaylists) {
             if (toFind.equals(playlist)) {
                 return playlist;
             }
         }
 
         throw new NoSuchPlaylistException(
-            "User: " + owner.username() + " does not have a Playlist with the Name: " + playlistName);
+            "User: " + owner.email() + " does not have a Playlist with the Name: " + playlistName);
     }
 
     @Override
     public Playlist getPlaylistByName(String playlistName) throws NoSuchPlaylistException {
-        for (Playlist playlist : playlists) {
-            if (playlist.getName().equals(playlistName)) {
-                return playlist;
-            }
-        }
-
-        throw new NoSuchPlaylistException("A Playlist with the Name: " + playlistName + " does not exist");
-    }
-
-    @Override
-    public boolean doesPlaylistExist(Playlist playlist) {
-        return playlists.contains(playlist);
+        return playlistsByUser.entrySet().stream().flatMap(entry -> entry.getValue().stream())
+            .filter(playlist -> playlist.getName().equalsIgnoreCase(playlistName)).findAny().orElseThrow(
+                () -> new NoSuchPlaylistException("A Playlist with the Name: " + playlistName + " does not exist"));
     }
 
     @Override
@@ -186,6 +182,12 @@ public class InMemoryDatabase implements Database {
         return false;
     }
 
+    @Override
+    public boolean doesPlaylistExist(Playlist playlist) {
+        return playlistsByUser.entrySet().stream().flatMap(entry -> entry.getValue().stream())
+            .anyMatch(toCompare -> toCompare.equals(playlist));
+    }
+
     private void shutdown() {
         saveUsersToFile();
         writePlaylistsToFile();
@@ -196,24 +198,24 @@ public class InMemoryDatabase implements Database {
             if (user.equals(check)) {
                 if (user.password().equals(check.password())) {
                     throw new UserAlreadyExistsException(
-                        "A User with Username: " + user.username() + " and Password: " + user.password() +
+                        "A User with Username: " + user.email() + " and Password: " + user.password() +
                         " already exists");
                 }
             }
         }
 
         throw new UserNotRegisteredException(
-            "A User with Username: " + user.username() + " and Password: " + user.username() + " does not exists");
+            "A User with Username: " + user.email() + " and Password: " + user.email() + " does not exists");
     }
 
     private void checkUserUsername(User user) throws UserAlreadyExistsException, UserNotRegisteredException {
         if (users.contains(user)) {
             throw new UserAlreadyExistsException(
-                "A User with Username: " + user.username() + " and Password: " + user.username() + " already exists");
+                "A User with Username: " + user.email() + " and Password: " + user.email() + " already exists");
         }
 
         throw new UserNotRegisteredException(
-            "A User with Username: " + user.username() + " and Password: " + user.username() + " does not exists");
+            "A User with Username: " + user.email() + " and Password: " + user.email() + " does not exists");
     }
 
     private void readUsersFromFile() {
@@ -251,7 +253,8 @@ public class InMemoryDatabase implements Database {
         String fileName = databaseFolder + playlistsFileName;
         try (BufferedReader reader = Files.newBufferedReader(Path.of(fileName))) {
 
-            playlists = reader.lines().map(line -> PlaylistBase.of(line, songsFolder)).collect(Collectors.toSet());
+            playlistsByUser = reader.lines().map(line -> PlaylistBase.of(line, songsFolder))
+                .collect(Collectors.groupingBy(Playlist::getOwner, Collectors.toSet()));
 
         } catch (IOException ignored) {
             //Database file does not exist yet
@@ -262,7 +265,10 @@ public class InMemoryDatabase implements Database {
         String fileName = databaseFolder + playlistsFileName;
         try (BufferedWriter bufferedWriter = Files.newBufferedWriter(Path.of(fileName))) {
 
-            for (Playlist playlist : playlists) {
+            Set<Playlist> allPlaylists = playlistsByUser.entrySet().stream().flatMap(entry -> entry.getValue().stream())
+                .collect(Collectors.toSet());
+
+            for (Playlist playlist : allPlaylists) {
                 bufferedWriter.write(playlist.toString());
             }
 

@@ -3,13 +3,24 @@ package command.thread.unsafe;
 import command.Command;
 import command.CommandType;
 import playlist.Playlist;
-import playlist.exceptions.InvalidPlaylistOperationException;
 import playlist.exceptions.NoSuchPlaylistException;
 import server.SpotifyServer;
 import song.Song;
 import user.User;
 
+/**
+ * Add Song to Playlist Command. Represents a Request from
+ * the User for a Song to be added to one of his Playlist
+ * <p>
+ * A Valid Add Song to Playlist Request looks like this: <br>
+ * add-song-to "playlist-name" <br>
+ * </p>
+ */
 public class AddSongToPlaylistCommand extends Command {
+    private static final int COMMAND_MAX_LENGTH = 2;
+    private static final int PLAYLIST_NAME_INDEX = 0;
+    private static final int SONG_NAME_INDEX = 1;
+
     public static final String COMMAND = "add-song-to";
     private final String fullSongName;
     private final String playlistName;
@@ -31,19 +42,22 @@ public class AddSongToPlaylistCommand extends Command {
             playlist.addSong(song);
 
         } catch (NoSuchPlaylistException e) {
-            throw new InvalidPlaylistOperationException("You do not own a Playlist with the Name: " + playlistName);
+            throw new NoSuchPlaylistException("You do not own a Playlist with the Name: " + playlistName);
         }
 
         return "Song added successfully";
     }
 
     public static AddSongToPlaylistCommand of(String line, User user, SpotifyServer spotifyServer) {
-        String[] split = split(line, 2);
+        String[] split = split(line, COMMAND_MAX_LENGTH);
 
-        if (split.length != 2) {
+        if (split.length != COMMAND_MAX_LENGTH) {
             return null;
         }
 
-        return new AddSongToPlaylistCommand(split[1], split[0], user, spotifyServer);
+        String fullSongName = split[SONG_NAME_INDEX];
+        String playlistName = split[PLAYLIST_NAME_INDEX];
+
+        return new AddSongToPlaylistCommand(fullSongName, playlistName, user, spotifyServer);
     }
 }

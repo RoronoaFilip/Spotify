@@ -4,20 +4,30 @@ import command.Command;
 import command.CommandType;
 import server.SpotifyServer;
 
+/**
+ * Register Command. Represents a Request from the User to register into the System
+ * <p>
+ * A Valid Register Request looks like this: <br>
+ * register "username" "password"
+ * </p>
+ */
 public class RegisterCommand extends Command {
+    private static final int COMMAND_MAX_LENGTH = 2;
+    private static final int EMAIL_INDEX = 0;
+    private static final int PASSWORD_INDEX = 1;
     public static final String COMMAND = "register";
-    private final String username;
+    private final String email;
     private final String password;
 
-    public RegisterCommand(String username, String password, SpotifyServer spotifyServer) {
+    public RegisterCommand(String email, String password, SpotifyServer spotifyServer) {
         super(spotifyServer, CommandType.REGISTER_COMMAND);
-        this.username = username;
+        this.email = email;
         this.password = password;
     }
 
     @Override
     public String call() throws Exception {
-        spotifyServer.getDatabase().registerUser(username, password);
+        spotifyServer.getDatabase().registerUser(email, password);
 
         return SUCCESSFUL_REGISTER;
     }
@@ -25,10 +35,13 @@ public class RegisterCommand extends Command {
     public static RegisterCommand of(String line, SpotifyServer spotifyServer) {
         String[] split = split(line);
 
-        if (split.length != 2) {
+        if (split.length != COMMAND_MAX_LENGTH) {
             return null;
         }
 
-        return new RegisterCommand(split[0], split[1], spotifyServer);
+        String email = split[EMAIL_INDEX];
+        String password = split[PASSWORD_INDEX];
+
+        return new RegisterCommand(email, password, spotifyServer);
     }
 }

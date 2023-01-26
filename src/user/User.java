@@ -1,14 +1,20 @@
 package user;
 
-public record User(String username, String password) {
+/**
+ * Represents a User in the System
+ *
+ * @param email    the Email of the User
+ * @param password the Password of the User
+ */
+public record User(String email, String password) {
     private static final String REGEX = ",";
-    private static final int USERNAME = 0;
+    private static final int EMAIL = 0;
     private static final int PASSWORD = 1;
 
     public static User of(String line) {
         String[] split = split(line);
 
-        return new User(split[USERNAME], split[PASSWORD]);
+        return new User(split[EMAIL], split[PASSWORD]);
     }
 
     @Override
@@ -20,7 +26,7 @@ public record User(String username, String password) {
 
         User user = (User) o;
 
-        if (!username.equalsIgnoreCase(user.username))
+        if (!email.equalsIgnoreCase(user.email))
             return false;
 
         return true;
@@ -28,14 +34,14 @@ public record User(String username, String password) {
 
     @Override
     public int hashCode() {
-        String usernameLowerCase = username.toLowerCase();
+        String usernameLowerCase = email.toLowerCase();
 
         return usernameLowerCase.hashCode();
     }
 
     @Override
     public String toString() {
-        return username + REGEX + password;
+        return email + REGEX + password;
     }
 
     private static String[] split(String line) {

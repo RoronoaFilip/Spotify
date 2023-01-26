@@ -14,7 +14,18 @@ import command.thread.unsafe.RegisterCommand;
 import server.DefaultSpotifyServer;
 import user.User;
 
+/**
+ * Creates Command from User Input
+ */
 public class CommandCreator {
+    /**
+     * Parsed User input and Creates a Command based on the first Word in the Input
+     *
+     * @param input         the User Input to be parsed
+     * @param user          the User whose Input is Parsed
+     * @param spotifyServer the Server
+     * @return a parsed Command if the Input is a Valid Command, null otherwise
+     */
     public static Command create(String input, User user, DefaultSpotifyServer spotifyServer) {
         if (input == null || input.isBlank()) {
             return null;

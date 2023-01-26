@@ -4,6 +4,13 @@ import command.Command;
 import command.CommandType;
 import server.SpotifyServerTerminatePermission;
 
+/**
+ * Terminate Command. Represents a Request from the User for the Server to Stop Working
+ * <p>
+ * A Valid Terminate Request looks like this: <br>
+ * terminate
+ * </p>
+ */
 public class TerminateCommand extends Command {
     public static final String COMMAND = "terminate";
 

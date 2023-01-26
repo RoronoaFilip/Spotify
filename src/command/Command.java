@@ -1,10 +1,17 @@
 package command;
 
 import server.SpotifyServer;
+import song.Song;
 
 import java.util.List;
 import java.util.concurrent.Callable;
 
+/**
+ * Threads that Represent what a User can do in the System
+ * <p>
+ * Most of the Commands use the corresponding Methods from the Server's Database
+ * </p>
+ */
 public abstract class Command implements Callable<String> {
     public static final String COMMAND_SPLIT_REGEX = "\\s+";
     protected static final String SUCCESSFUL_LOGIN = "You have logged in successfully";
@@ -16,18 +23,19 @@ public abstract class Command implements Callable<String> {
     protected static final String USER_DOES_NOT_EXIST = "Such User does not exist";
 
     protected SpotifyServer spotifyServer;
-    private CommandType type;
+    private final CommandType type;
 
     protected Command(SpotifyServer spotifyServer, CommandType type) {
         this.spotifyServer = spotifyServer;
         this.type = type;
     }
 
-    protected static String constructMessage(List<?> objects) {
+    protected static String constructMessage(List<Song> songs) {
         StringBuilder message = new StringBuilder();
 
-        for (int i = 0; i < objects.size(); ++i) {
-            message.append(i + 1).append(". ").append(objects.get(i)).append(System.lineSeparator());
+        for (int i = 0; i < songs.size(); ++i) {
+            message.append(i + 1).append(". ").append(songs.get(i)).append(" -> Streams: ")
+                .append(songs.get(i).getStreams()).append(System.lineSeparator());
         }
 
         return message.toString();
