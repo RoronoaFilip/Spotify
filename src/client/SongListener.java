@@ -38,7 +38,6 @@ public class SongListener implements Runnable {
             }
         } catch (IOException ignored) {
             System.out.println("No Song Streamer detected");
-            spotifyClient.resetSourceDataLine();
         }
 
         spotifyClient.resetSourceDataLine();

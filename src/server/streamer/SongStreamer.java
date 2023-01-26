@@ -1,7 +1,7 @@
 package server.streamer;
 
-import server.SpotifyServerStreamingPermission;
 import database.song.Song;
+import server.SpotifyServerStreamingPermission;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;

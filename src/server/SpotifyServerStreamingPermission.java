@@ -1,7 +1,7 @@
 package server;
 
-import server.exceptions.PortCurrentlyStreamingException;
 import database.user.User;
+import server.exceptions.PortCurrentlyStreamingException;
 
 /**
  * Represents 2nd Level of Permissions in the Spotify Server

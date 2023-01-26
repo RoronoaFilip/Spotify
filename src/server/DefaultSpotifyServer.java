@@ -444,6 +444,6 @@ public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
         DefaultSpotifyServer spotifyServer1 = new DefaultSpotifyServer(port, new CommandExecutor(),
             new InMemoryDatabase(Database.SONGS_FOLDER_DEFAULT, Database.DATABASE_FOLDER_DEFAULT,
                 Database.USERS_FILE_NAME_DEFAULT, Database.PLAYLISTS_FILE_NAME_DEFAULT));
-        new Thread(spotifyServer1).start();
+        new Thread(spotifyServer1, "Spotify Server Thread").start();
     }
 }

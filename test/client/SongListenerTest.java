@@ -32,7 +32,7 @@ public class SongListenerTest {
 
     private final Database database = new InMemoryDatabase("songsTestFolder/", "", "", "");
     private final SpotifyServerStreamingPermission spotifyServer =
-        new DefaultSpotifyServer(5999, new CommandExecutor(), database);
+        new DefaultSpotifyServer(6999, new CommandExecutor(), database);
 
     private final SpotifyClient client = new SpotifyClient();
     private final User user = new User("filip", "filip");
@@ -41,14 +41,13 @@ public class SongListenerTest {
     @Test
     void testSongListenerEndsSongCorrectly()
         throws LineUnavailableException, UserAlreadyLoggedInException, UserNotRegisteredException,
-        UserAlreadyExistsException, InterruptedException {
+        UserAlreadyExistsException {
         database.registerUser("filip", "filip");
         spotifyServer.logIn(user);
         long port = spotifyServer.getPort(user);
 
         new Thread(new SongStreamer((int) port, song, spotifyServer)).start();
 
-        Thread.sleep(500);
         client.constructSourceDataLine(testSongAudioFormatString);
 
         assertThrows(PortCurrentlyStreamingException.class, () -> spotifyServer.isPortStreaming(port),

@@ -11,8 +11,8 @@ import command.thread.unsafe.CreatePlaylistCommand;
 import command.thread.unsafe.DisconnectCommand;
 import command.thread.unsafe.LoginCommand;
 import command.thread.unsafe.RegisterCommand;
-import server.DefaultSpotifyServer;
 import database.user.User;
+import server.DefaultSpotifyServer;
 
 /**
  * Creates Command from User Input

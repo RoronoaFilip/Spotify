@@ -36,7 +36,7 @@ public class DefaultSpotifyServerTest {
     private Set<Long> currentlyStreamingPorts;
     private TreeSet<Long> ports;
 
-    private User user;
+    private User user = new User(TEST_STRING, TEST_STRING);
 
     {
         database = Mockito.mock(Database.class);
@@ -46,7 +46,6 @@ public class DefaultSpotifyServerTest {
     @BeforeEach
     void beforeEach() {
         spotifyServer = new DefaultSpotifyServer(6999, executor, database);
-        user = new User(TEST_STRING, TEST_STRING);
 
         streamingPortsByUser = spotifyServer.getStreamingPortsByUser();
         selectionKeysByUser = spotifyServer.getSelectionKeysByUser();

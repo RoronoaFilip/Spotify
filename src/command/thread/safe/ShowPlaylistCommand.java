@@ -3,8 +3,8 @@ package command.thread.safe;
 import command.Command;
 import command.CommandType;
 import database.playlist.Playlist;
-import server.SpotifyServer;
 import database.user.User;
+import server.SpotifyServer;
 
 import java.util.List;
 

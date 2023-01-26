@@ -6,9 +6,9 @@ import command.thread.safe.PlayCommand;
 import command.thread.safe.SearchCommand;
 import command.thread.safe.ShowPlaylistCommand;
 import command.thread.safe.TopSongsCommand;
+import database.user.User;
 import org.junit.jupiter.api.Test;
 import server.DefaultSpotifyServer;
-import database.user.User;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;

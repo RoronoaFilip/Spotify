@@ -2,8 +2,8 @@ package command.thread.safe;
 
 import command.Command;
 import command.CommandType;
-import server.SpotifyServer;
 import database.song.Song;
+import server.SpotifyServer;
 
 import java.util.ArrayList;
 import java.util.List;

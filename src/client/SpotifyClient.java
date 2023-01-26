@@ -84,14 +84,10 @@ public class SpotifyClient implements Runnable {
             return;
         }
 
-        AudioFormat audioFormat =
-            new AudioFormat(new AudioFormat.Encoding(splitReply[ENCODING_INDEX]),
-                Float.parseFloat(splitReply[SAMPLE_RATE_INDEX]),
-                Integer.parseInt(splitReply[SAMPLE_SIZE_IN_BITS_INDEX]),
-                Integer.parseInt(splitReply[CHANNELS_INDEX]),
-                Integer.parseInt(splitReply[FRAME_SIZE_INDEX]),
-                Float.parseFloat(splitReply[FRAME_RATE_INDEX]),
-                Boolean.parseBoolean(splitReply[BIG_ENDIAN_INDEX]));
+        AudioFormat audioFormat = new AudioFormat(new AudioFormat.Encoding(splitReply[ENCODING_INDEX]),
+            Float.parseFloat(splitReply[SAMPLE_RATE_INDEX]), Integer.parseInt(splitReply[SAMPLE_SIZE_IN_BITS_INDEX]),
+            Integer.parseInt(splitReply[CHANNELS_INDEX]), Integer.parseInt(splitReply[FRAME_SIZE_INDEX]),
+            Float.parseFloat(splitReply[FRAME_RATE_INDEX]), Boolean.parseBoolean(splitReply[BIG_ENDIAN_INDEX]));
 
         int streamingPort = Integer.parseInt(splitReply[PORT_INDEX]);
 
@@ -99,7 +95,7 @@ public class SpotifyClient implements Runnable {
 
         sourceDataLine = (SourceDataLine) AudioSystem.getLine(info);
         sourceDataLine.open();
-        new Thread(new SongListener(streamingPort, sourceDataLine, this)).start();
+        new Thread(new SongListener(streamingPort, sourceDataLine, this), "Song Listener").start();
     }
 
     private void stopSong() {
@@ -139,6 +135,6 @@ public class SpotifyClient implements Runnable {
 
     public static void main(String[] args) {
         SpotifyClient spotifyClient = new SpotifyClient();
-        new Thread(spotifyClient).start();
+        new Thread(spotifyClient, "Spotify Client Thread").start();
     }
 }

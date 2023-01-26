@@ -2,10 +2,10 @@ package command.thread.safe;
 
 import command.Command;
 import command.CommandType;
-import server.SpotifyServerStreamingPermission;
-import server.streamer.SongStreamer;
 import database.song.Song;
 import database.user.User;
+import server.SpotifyServerStreamingPermission;
+import server.streamer.SongStreamer;
 
 /**
  * Play Command. Represents a Request from the User for a Song to be played
@@ -38,7 +38,7 @@ public class PlayCommand extends Command {
 
         SongStreamer streamer = new SongStreamer((int) userStreamingPort, toPlay, spotifyServerStreamingPermission);
 
-        Thread thread = new Thread(streamer);
+        Thread thread = new Thread(streamer, "Song Streamer for User: " + user);
         thread.setDaemon(true);
         thread.start();
 
