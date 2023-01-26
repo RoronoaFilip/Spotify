@@ -3,7 +3,7 @@ package command.thread.unsafe;
 import command.Command;
 import command.CommandType;
 import server.SpotifyServer;
-import user.User;
+import database.user.User;
 
 /**
  * Create Playlist Command. Represents a Request from the User for a Playlist to be shown

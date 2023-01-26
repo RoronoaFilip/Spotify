@@ -8,10 +8,10 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import server.exceptions.PortCurrentlyStreamingException;
-import user.User;
-import user.exceptions.UserAlreadyLoggedInException;
-import user.exceptions.UserNotLoggedInException;
-import user.exceptions.UserNotRegisteredException;
+import database.user.User;
+import database.user.exceptions.UserAlreadyLoggedInException;
+import database.user.exceptions.UserNotLoggedInException;
+import database.user.exceptions.UserNotRegisteredException;
 
 import java.nio.channels.SelectionKey;
 import java.util.Map;

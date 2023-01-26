@@ -2,15 +2,15 @@ package database;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import playlist.Playlist;
-import playlist.PlaylistBase;
-import playlist.exceptions.NoSuchPlaylistException;
-import playlist.exceptions.PlaylistAlreadyExistsException;
-import song.Song;
-import song.exceptions.SongNotFoundException;
-import user.User;
-import user.exceptions.UserAlreadyExistsException;
-import user.exceptions.UserNotRegisteredException;
+import database.playlist.Playlist;
+import database.playlist.PlaylistBase;
+import database.playlist.exceptions.NoSuchPlaylistException;
+import database.playlist.exceptions.PlaylistAlreadyExistsException;
+import database.song.Song;
+import database.song.exceptions.SongNotFoundException;
+import database.user.User;
+import database.user.exceptions.UserAlreadyExistsException;
+import database.user.exceptions.UserNotRegisteredException;
 
 import java.io.File;
 import java.io.IOException;

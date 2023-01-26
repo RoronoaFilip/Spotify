@@ -12,7 +12,7 @@ import command.thread.unsafe.DisconnectCommand;
 import command.thread.unsafe.LoginCommand;
 import command.thread.unsafe.RegisterCommand;
 import server.DefaultSpotifyServer;
-import user.User;
+import database.user.User;
 
 /**
  * Creates Command from User Input

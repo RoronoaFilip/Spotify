@@ -8,10 +8,10 @@ import command.thread.unsafe.LoginCommand;
 import database.Database;
 import database.InMemoryDatabase;
 import server.exceptions.PortCurrentlyStreamingException;
-import user.User;
-import user.exceptions.UserAlreadyLoggedInException;
-import user.exceptions.UserNotLoggedInException;
-import user.exceptions.UserNotRegisteredException;
+import database.user.User;
+import database.user.exceptions.UserAlreadyLoggedInException;
+import database.user.exceptions.UserNotLoggedInException;
+import database.user.exceptions.UserNotRegisteredException;
 
 import java.io.IOException;
 import java.io.PrintWriter;

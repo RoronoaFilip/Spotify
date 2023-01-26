@@ -1,7 +1,8 @@
 package song;
 
+import database.song.Song;
 import org.junit.jupiter.api.Test;
-import song.exceptions.SongNotFoundException;
+import database.song.exceptions.SongNotFoundException;
 
 import javax.sound.sampled.AudioFormat;
 

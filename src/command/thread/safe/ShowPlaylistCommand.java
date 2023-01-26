@@ -2,9 +2,9 @@ package command.thread.safe;
 
 import command.Command;
 import command.CommandType;
-import playlist.Playlist;
+import database.playlist.Playlist;
 import server.SpotifyServer;
-import user.User;
+import database.user.User;
 
 import java.util.List;
 

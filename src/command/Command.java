@@ -1,7 +1,7 @@
 package command;
 
 import server.SpotifyServer;
-import song.Song;
+import database.song.Song;
 
 import java.util.List;
 import java.util.concurrent.Callable;

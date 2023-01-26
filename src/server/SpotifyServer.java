@@ -1,10 +1,10 @@
 package server;
 
 import database.Database;
-import user.User;
-import user.exceptions.UserAlreadyLoggedInException;
-import user.exceptions.UserNotLoggedInException;
-import user.exceptions.UserNotRegisteredException;
+import database.user.User;
+import database.user.exceptions.UserAlreadyLoggedInException;
+import database.user.exceptions.UserNotLoggedInException;
+import database.user.exceptions.UserNotRegisteredException;
 
 /**
  * Represents the lowest Permission in the Spotify Server

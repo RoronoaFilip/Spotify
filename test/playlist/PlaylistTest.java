@@ -1,8 +1,10 @@
 package playlist;
 
+import database.playlist.Playlist;
+import database.playlist.PlaylistBase;
 import org.junit.jupiter.api.Test;
-import song.Song;
-import user.User;
+import database.song.Song;
+import database.user.User;
 
 import javax.sound.sampled.AudioFormat;
 import java.util.Collection;

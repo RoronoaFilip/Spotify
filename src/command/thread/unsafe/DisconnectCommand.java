@@ -3,7 +3,7 @@ package command.thread.unsafe;
 import command.Command;
 import command.CommandType;
 import server.SpotifyServer;
-import user.User;
+import database.user.User;
 
 /**
  * Disconnect Command. Represents a Request from the User to log out

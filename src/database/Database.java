@@ -1,13 +1,13 @@
 package database;
 
-import playlist.Playlist;
-import playlist.exceptions.NoSuchPlaylistException;
-import playlist.exceptions.PlaylistAlreadyExistsException;
-import song.Song;
-import song.exceptions.SongNotFoundException;
-import user.User;
-import user.exceptions.UserAlreadyExistsException;
-import user.exceptions.UserNotRegisteredException;
+import database.playlist.Playlist;
+import database.playlist.exceptions.NoSuchPlaylistException;
+import database.playlist.exceptions.PlaylistAlreadyExistsException;
+import database.song.Song;
+import database.song.exceptions.SongNotFoundException;
+import database.user.User;
+import database.user.exceptions.UserAlreadyExistsException;
+import database.user.exceptions.UserNotRegisteredException;
 
 import java.io.Closeable;
 import java.util.Collection;

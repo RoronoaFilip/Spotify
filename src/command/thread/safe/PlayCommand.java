@@ -4,8 +4,8 @@ import command.Command;
 import command.CommandType;
 import server.SpotifyServerStreamingPermission;
 import server.streamer.SongStreamer;
-import song.Song;
-import user.User;
+import database.song.Song;
+import database.user.User;
 
 /**
  * Play Command. Represents a Request from the User for a Song to be played

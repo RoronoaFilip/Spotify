@@ -2,11 +2,11 @@ package command.thread.unsafe;
 
 import command.Command;
 import command.CommandType;
-import playlist.Playlist;
-import playlist.exceptions.NoSuchPlaylistException;
+import database.playlist.Playlist;
+import database.playlist.exceptions.NoSuchPlaylistException;
 import server.SpotifyServer;
-import song.Song;
-import user.User;
+import database.song.Song;
+import database.user.User;
 
 /**
  * Add Song to Playlist Command. Represents a Request from

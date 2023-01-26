@@ -8,7 +8,7 @@ import command.thread.safe.ShowPlaylistCommand;
 import command.thread.safe.TopSongsCommand;
 import org.junit.jupiter.api.Test;
 import server.DefaultSpotifyServer;
-import user.User;
+import database.user.User;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
