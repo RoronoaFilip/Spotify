@@ -1,3 +1,0 @@
-zoro,12
-filip,123
-roro,1234
