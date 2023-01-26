@@ -7,11 +7,11 @@ import command.executor.CommandExecutor;
 import command.thread.unsafe.LoginCommand;
 import database.Database;
 import database.InMemoryDatabase;
-import server.exceptions.PortCurrentlyStreamingException;
 import database.user.User;
 import database.user.exceptions.UserAlreadyLoggedInException;
 import database.user.exceptions.UserNotLoggedInException;
 import database.user.exceptions.UserNotRegisteredException;
+import server.exceptions.PortCurrentlyStreamingException;
 
 import java.io.IOException;
 import java.io.PrintWriter;
