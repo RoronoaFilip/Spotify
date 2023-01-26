@@ -189,8 +189,12 @@ public class InMemoryDatabase implements Database {
     }
 
     private void shutdown() {
-        saveUsersToFile();
-        writePlaylistsToFile();
+        writeCollectionToFile(users, databaseFolder, usersFileName);
+
+        Set<Playlist> allPlaylists = playlistsByUser.entrySet().stream().flatMap(entry -> entry.getValue().stream())
+            .collect(Collectors.toSet());
+
+        writeCollectionToFile(allPlaylists, databaseFolder, playlistsFileName);
     }
 
     private void checkUserPassword(User user) throws UserAlreadyExistsException, UserNotRegisteredException {
@@ -229,26 +233,6 @@ public class InMemoryDatabase implements Database {
         }
     }
 
-    private void saveUsersToFile() {
-        String fileName = databaseFolder + usersFileName;
-        Path of = Path.of(databaseFolder);
-        try {
-            if (!Files.exists(of)) {
-                Files.createDirectories(of);
-            }
-
-            try (BufferedWriter bufferedWriter = Files.newBufferedWriter(Path.of(fileName))) {
-
-                for (User user : users) {
-                    bufferedWriter.write(user.toString() + System.lineSeparator());
-                }
-
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
     private void readPlaylistsFromFile() {
         String fileName = databaseFolder + playlistsFileName;
         try (BufferedReader reader = Files.newBufferedReader(Path.of(fileName))) {
@@ -261,15 +245,17 @@ public class InMemoryDatabase implements Database {
         }
     }
 
-    private void writePlaylistsToFile() {
-        String fileName = databaseFolder + playlistsFileName;
-        try (BufferedWriter bufferedWriter = Files.newBufferedWriter(Path.of(fileName))) {
+    private void writeCollectionToFile(Collection<?> objects, String folder, String fileName) {
+        String fullFileName = folder + fileName;
+        Path databaseFolderPath = Path.of(folder);
+        try (BufferedWriter bufferedWriter = Files.newBufferedWriter(Path.of(fullFileName))) {
 
-            Set<Playlist> allPlaylists = playlistsByUser.entrySet().stream().flatMap(entry -> entry.getValue().stream())
-                .collect(Collectors.toSet());
+            if (!Files.exists(databaseFolderPath)) {
+                Files.createDirectories(databaseFolderPath);
+            }
 
-            for (Playlist playlist : allPlaylists) {
-                bufferedWriter.write(playlist.toString());
+            for (Object object : objects) {
+                bufferedWriter.write(object.toString() + System.lineSeparator());
             }
 
         } catch (IOException e) {

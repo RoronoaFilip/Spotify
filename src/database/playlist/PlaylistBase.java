@@ -136,6 +136,6 @@ public class PlaylistBase implements Playlist {
     @Override
     public String toString() {
         return owner.toString() + OWNER_SONGS_REGEX + name + OWNER_SONGS_REGEX +
-               songs.stream().map(Song::getFileName).collect(Collectors.joining(",")) + System.lineSeparator();
+               songs.stream().map(Song::getFileName).collect(Collectors.joining(","));
     }
 }

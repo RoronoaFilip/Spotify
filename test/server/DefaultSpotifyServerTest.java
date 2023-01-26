@@ -2,16 +2,16 @@ package server;
 
 import command.executor.CommandExecutor;
 import database.Database;
+import database.user.User;
+import database.user.exceptions.UserAlreadyLoggedInException;
+import database.user.exceptions.UserNotLoggedInException;
+import database.user.exceptions.UserNotRegisteredException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import server.exceptions.PortCurrentlyStreamingException;
-import database.user.User;
-import database.user.exceptions.UserAlreadyLoggedInException;
-import database.user.exceptions.UserNotLoggedInException;
-import database.user.exceptions.UserNotRegisteredException;
 
 import java.nio.channels.SelectionKey;
 import java.util.Map;
