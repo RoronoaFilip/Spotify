@@ -26,6 +26,11 @@ public class SongListener implements Runnable {
             try {
                 do {
                     int readBytes = bufferedInputStream.read(toWrite, 0, toWrite.length);
+
+                    if (readBytes == -1) {
+                        break;
+                    }
+
                     dataLine.write(toWrite, 0, readBytes);
                 } while (dataLine.isRunning());
             } catch (IllegalArgumentException ignored) {
