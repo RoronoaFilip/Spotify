@@ -32,7 +32,7 @@ import java.util.Collection;
  */
 public interface Database extends AutoCloseable, Closeable {
     String SONGS_FOLDER_DEFAULT = "songs/";
-    String DATABASE_FOLDER_DEFAULT = "database/";
+    String DATABASE_FOLDER_DEFAULT = "spotifyDatabase/";
     String USERS_FILE_NAME_DEFAULT = "users.txt";
     String PLAYLISTS_FILE_NAME_DEFAULT = "playlists.txt";
 
