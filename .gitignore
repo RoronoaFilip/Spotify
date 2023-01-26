@@ -259,5 +259,6 @@ lib
 *.txt
 storage
 songs
+test
 songsTestFolder
 spotifyDatabase
