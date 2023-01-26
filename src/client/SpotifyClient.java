@@ -13,6 +13,7 @@ import java.nio.channels.SocketChannel;
 import java.util.Scanner;
 
 public class SpotifyClient implements Runnable {
+    private static final int AUDIO_FORMAT_RESPONSE_SIZE = 8;
     private static final int ENCODING_INDEX = 0;
     private static final int SAMPLE_RATE_INDEX = 1;
     private static final int SAMPLE_SIZE_IN_BITS_INDEX = 2;
@@ -75,10 +76,10 @@ public class SpotifyClient implements Runnable {
         stopSong();
     }
 
-    private void constructSourceDataLine(String reply) throws LineUnavailableException {
+    public void constructSourceDataLine(String reply) throws LineUnavailableException {
         String[] splitReply = reply.split("\\s+");
 
-        if (splitReply.length != 8) {
+        if (splitReply.length != AUDIO_FORMAT_RESPONSE_SIZE) {
             System.out.println(reply);
             return;
         }
@@ -130,6 +131,10 @@ public class SpotifyClient implements Runnable {
         byte[] byteArray = new byte[buffer.remaining()];
         buffer.get(byteArray);
         return new String(byteArray, "UTF-8"); // buffer drain
+    }
+
+    public SourceDataLine getSourceDataLine() {
+        return sourceDataLine;
     }
 
     public static void main(String[] args) {
