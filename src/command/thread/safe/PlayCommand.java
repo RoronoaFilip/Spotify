@@ -42,7 +42,7 @@ public class PlayCommand extends Command {
         thread.setDaemon(true);
         thread.start();
 
-        return toPlay.getAudioFormatString() + " " + userStreamingPort;
+        return "ok " + toPlay.getAudioFormatString() + " " + userStreamingPort;
     }
 
     public static PlayCommand of(String line, User user, SpotifyServerStreamingPermission spotifyServer) {

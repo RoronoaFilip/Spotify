@@ -13,15 +13,15 @@ import java.nio.channels.SocketChannel;
 import java.util.Scanner;
 
 public class SpotifyClient implements Runnable {
-    private static final int AUDIO_FORMAT_RESPONSE_SIZE = 8;
-    private static final int ENCODING_INDEX = 0;
-    private static final int SAMPLE_RATE_INDEX = 1;
-    private static final int SAMPLE_SIZE_IN_BITS_INDEX = 2;
-    private static final int CHANNELS_INDEX = 3;
-    private static final int FRAME_SIZE_INDEX = 4;
-    private static final int FRAME_RATE_INDEX = 5;
-    private static final int BIG_ENDIAN_INDEX = 6;
-    private static final int PORT_INDEX = 7;
+    private static final int RESPONSE_STATUS_INDEX = 0;
+    private static final int ENCODING_INDEX = 1;
+    private static final int SAMPLE_RATE_INDEX = 2;
+    private static final int SAMPLE_SIZE_IN_BITS_INDEX = 3;
+    private static final int CHANNELS_INDEX = 4;
+    private static final int FRAME_SIZE_INDEX = 5;
+    private static final int FRAME_RATE_INDEX = 6;
+    private static final int BIG_ENDIAN_INDEX = 7;
+    private static final int PORT_INDEX = 8;
 
     private static final int SERVER_PORT = 6999;
     private static final String SERVER_HOST = "localhost";
@@ -79,7 +79,7 @@ public class SpotifyClient implements Runnable {
     public void constructSourceDataLine(String reply) throws LineUnavailableException {
         String[] splitReply = reply.split("\\s+");
 
-        if (splitReply.length != AUDIO_FORMAT_RESPONSE_SIZE) {
+        if (!splitReply[RESPONSE_STATUS_INDEX].equalsIgnoreCase("ok")) {
             System.out.println(reply);
             return;
         }
