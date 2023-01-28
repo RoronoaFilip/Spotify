@@ -6,6 +6,7 @@ import database.playlist.exceptions.PlaylistAlreadyExistsException;
 import database.song.Song;
 import database.song.exceptions.SongNotFoundException;
 import database.user.User;
+import database.user.exceptions.InvalidEmailException;
 import database.user.exceptions.UserAlreadyExistsException;
 import database.user.exceptions.UserNotRegisteredException;
 
@@ -44,7 +45,7 @@ public interface Database extends AutoCloseable, Closeable {
      * @throws UserAlreadyExistsException if a User with the same Email has
      *                                    already registered into the Database
      */
-    void registerUser(String email, String password) throws UserAlreadyExistsException;
+    void registerUser(String email, String password) throws UserAlreadyExistsException, InvalidEmailException;
 
     /**
      * Adds a Song to the Database
@@ -69,8 +70,8 @@ public interface Database extends AutoCloseable, Closeable {
      * </p>
      *
      * @param fullName the Songs Full Name
-     * @return
-     * @throws SongNotFoundException
+     * @return the Song
+     * @throws SongNotFoundException if the Song with such full Name does not exist in the Database
      */
     Song getSongBy(String fullName) throws SongNotFoundException;
 
@@ -95,7 +96,7 @@ public interface Database extends AutoCloseable, Closeable {
      * @throws NoSuchPlaylistException if the {@code owner}
      *                                 does not have a Playlist with that Name
      */
-    Playlist getPlaylist(String playlistName, User owner) throws NoSuchPlaylistException;
+    Playlist getPlaylist(String playlistName, User owner) throws NoSuchPlaylistException, UserNotRegisteredException;
 
     /**
      * Searches for a Playlist with the specified Name

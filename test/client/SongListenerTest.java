@@ -5,6 +5,7 @@ import database.Database;
 import database.InMemoryDatabase;
 import database.song.Song;
 import database.user.User;
+import database.user.exceptions.InvalidEmailException;
 import database.user.exceptions.UserAlreadyExistsException;
 import database.user.exceptions.UserAlreadyLoggedInException;
 import database.user.exceptions.UserNotRegisteredException;
@@ -23,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class SongListenerTest {
-    private final String testSongAudioFormatString = "PCM_SIGNED 44100.0 16 2 4 44100.0 false 7000";
+    private final String testSongAudioFormatString = "ok PCM_SIGNED 44100.0 16 2 4 44100.0 false 7000";
     private final AudioFormat audioFormat =
         new AudioFormat(new AudioFormat.Encoding("PCM_SIGNED"), 44100.0f, 16, 2, 4, 44100.0f, false);
 
@@ -35,14 +36,14 @@ public class SongListenerTest {
         new DefaultSpotifyServer(6999, new CommandExecutor(), database);
 
     private final SpotifyClient client = new SpotifyClient();
-    private final User user = new User("filip", "filip");
+    private final User user = new User("filip@", "filip");
 
 
     @Test
     void testSongListenerEndsSongCorrectly()
         throws LineUnavailableException, UserAlreadyLoggedInException, UserNotRegisteredException,
-        UserAlreadyExistsException {
-        database.registerUser("filip", "filip");
+        UserAlreadyExistsException, InvalidEmailException {
+        database.registerUser("filip@", "filip");
         spotifyServer.logIn(user);
         long port = spotifyServer.getPort(user);
 

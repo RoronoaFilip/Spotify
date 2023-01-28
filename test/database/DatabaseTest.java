@@ -1,7 +1,5 @@
 package database;
 
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
 import database.playlist.Playlist;
 import database.playlist.PlaylistBase;
 import database.playlist.exceptions.NoSuchPlaylistException;
@@ -9,8 +7,11 @@ import database.playlist.exceptions.PlaylistAlreadyExistsException;
 import database.song.Song;
 import database.song.exceptions.SongNotFoundException;
 import database.user.User;
+import database.user.exceptions.InvalidEmailException;
 import database.user.exceptions.UserAlreadyExistsException;
 import database.user.exceptions.UserNotRegisteredException;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
@@ -30,7 +31,8 @@ public class DatabaseTest {
     private static InMemoryDatabase database;
 
     private static final String TEST_STRING = "testString";
-    private static final String REGISTERED = "registeredUser";
+    private static final String REGISTERED_EMAIL = "registered@User";
+    private static final String REGISTERED_PASSWORD = "registeredUser";
 
     private static User user;
     private static Playlist userPlaylist;
@@ -44,16 +46,17 @@ public class DatabaseTest {
             "testPlaylistsFile.txt");
         // Database will have 0 songs
 
-        user = new User(REGISTERED, REGISTERED);
+        user = new User(REGISTERED_EMAIL, REGISTERED_PASSWORD);
         song1 = new Song("Song1", "Song1");
         song2 = new Song("Song2", "Song2");
         song3 = new Song("Song3", "Song3");
     }
 
     @BeforeAll
-    static void setUp() throws UserAlreadyExistsException, PlaylistAlreadyExistsException, UserNotRegisteredException {
-        database.registerUser(REGISTERED, REGISTERED);
-        userPlaylist = database.createPlaylist(REGISTERED, user);
+    static void setUp() throws UserAlreadyExistsException, PlaylistAlreadyExistsException, UserNotRegisteredException,
+        InvalidEmailException {
+        database.registerUser(REGISTERED_EMAIL, REGISTERED_PASSWORD);
+        userPlaylist = database.createPlaylist(REGISTERED_PASSWORD, user);
 
         database.addSong(song1);
         database.addSong(song2);
@@ -82,10 +85,10 @@ public class DatabaseTest {
     }
 
     @Test
-    void testRegisterUserRegisterUserCorrectly() throws UserAlreadyExistsException {
-        database.registerUser("a New User", "a New User");
+    void testRegisterUserRegisterUserCorrectly() throws UserAlreadyExistsException, InvalidEmailException {
+        database.registerUser("a @ New User", "a New User");
 
-        User newUser = new User("a New User", "a New User");
+        User newUser = new User("a @ New User", "a New User");
 
         Set<User> registeredUsers = database.getUsers();
 
@@ -93,11 +96,20 @@ public class DatabaseTest {
     }
 
     @Test
-    void testRegisterUserThrowsUserAlreadyExistsExceptionForAlreadyRegisteredUser() throws UserAlreadyExistsException {
-        database.registerUser("Throw Exception", "Throw Exception");
+    void testRegisterUserThrowsUserAlreadyExistsExceptionForAlreadyRegisteredUser()
+        throws UserAlreadyExistsException, InvalidEmailException {
+        database.registerUser("Throw @ Exception", "Throw Exception");
 
         assertThrows(UserAlreadyExistsException.class,
-            () -> database.registerUser("Throw Exception", "Throw Exception"), "UserAlreadyExistsException expected");
+            () -> database.registerUser("Throw @ Exception", "Throw Exception"), "UserAlreadyExistsException expected");
+    }
+
+    @Test
+    void testRegisterUserThrowsInvalidEmailExceptionForAlreadyRegisteredUser()
+        throws InvalidEmailException, InvalidEmailException, UserAlreadyExistsException {
+        assertThrows(InvalidEmailException.class,
+            () -> database.registerUser("InvalidEmailException Exception", "InvalidEmailException Exception"),
+            "InvalidEmailException expected");
     }
 
     @Test
@@ -119,11 +131,13 @@ public class DatabaseTest {
 
     @Test
     void testCreatePlaylistWorksCorrectly()
-        throws PlaylistAlreadyExistsException, UserNotRegisteredException, UserAlreadyExistsException {
-        String str = "WorksCorrectly";
+        throws PlaylistAlreadyExistsException, UserNotRegisteredException, UserAlreadyExistsException,
+        InvalidEmailException {
+        String email = "Works@Correctly";
+        String pass = "WorksCorrectly";
 
-        User newUser = new User(str, str);
-        database.registerUser(str, str);
+        User newUser = new User(email, pass);
+        database.registerUser(email, pass);
 
         Playlist expected = new PlaylistBase("playlist", newUser);
 
@@ -134,11 +148,13 @@ public class DatabaseTest {
 
     @Test
     void testCreatePlaylistThrowsPlaylistAlreadyExistsException()
-        throws PlaylistAlreadyExistsException, UserNotRegisteredException, UserAlreadyExistsException {
-        String str = "PlaylistAlreadyExistsException";
+        throws PlaylistAlreadyExistsException, UserNotRegisteredException, UserAlreadyExistsException,
+        InvalidEmailException {
+        String email = "Throws@Exception";
+        String pass = "ThrowsException";
 
-        User newUser = new User(str, str);
-        database.registerUser(str, str);
+        User newUser = new User(email, pass);
+        database.registerUser(email, pass);
 
         Playlist actual = database.createPlaylist("playlist", newUser);
 
@@ -157,8 +173,16 @@ public class DatabaseTest {
     }
 
     @Test
-    void testGetPlaylistWorksCorrectly() throws NoSuchPlaylistException {
-        assertEquals(userPlaylist, database.getPlaylist(REGISTERED, user), "The Playlist was not returned correctly");
+    void testGetPlaylistWorksCorrectly() throws NoSuchPlaylistException, UserNotRegisteredException {
+        assertEquals(userPlaylist, database.getPlaylist(REGISTERED_PASSWORD, user),
+            "The Playlist was not returned correctly");
+    }
+
+    @Test
+    void testGetPlaylistThrowsUserNotRegisteredException() {
+        assertThrows(UserNotRegisteredException.class,
+            () -> database.getPlaylist("playlistThatDoesNotExist", new User("Not@Registered", "Not registered")),
+            "UserNotRegisteredException expected");
     }
 
     @Test
@@ -169,7 +193,8 @@ public class DatabaseTest {
 
     @Test
     void testGetPlaylistByNameWorksCorrectly() throws NoSuchPlaylistException {
-        assertEquals(userPlaylist, database.getPlaylistByName(REGISTERED), "The Playlist was not returned correctly");
+        assertEquals(userPlaylist, database.getPlaylistByName(REGISTERED_PASSWORD),
+            "The Playlist was not returned correctly");
     }
 
     @Test

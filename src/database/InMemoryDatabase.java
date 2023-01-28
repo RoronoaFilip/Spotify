@@ -7,6 +7,7 @@ import database.playlist.exceptions.PlaylistAlreadyExistsException;
 import database.song.Song;
 import database.song.exceptions.SongNotFoundException;
 import database.user.User;
+import database.user.exceptions.InvalidEmailException;
 import database.user.exceptions.UserAlreadyExistsException;
 import database.user.exceptions.UserNotRegisteredException;
 
@@ -30,8 +31,7 @@ public class InMemoryDatabase implements Database {
     private String usersFileName = "users.txt";
     private String playlistsFileName = "playlistsByUser.txt";
 
-    private static final String SPACE_REGEX = "\\s+";
-    private static final String UNDERLINE_REGEX = "_";
+    private static final String WAV_GLOB = "*.wav";
 
     private Set<User> users;
     private final Object usersRegisterLock = new Object();
@@ -55,12 +55,12 @@ public class InMemoryDatabase implements Database {
     }
 
     @Override
-    public void registerUser(String email, String password) throws UserAlreadyExistsException {
+    public void registerUser(String email, String password) throws UserAlreadyExistsException, InvalidEmailException {
         User toRegister = new User(email, password);
 
         synchronized (usersRegisterLock) {
             try {
-                checkUserUsername(toRegister);
+                checkUserEmail(toRegister);
             } catch (UserNotRegisteredException e) {
                 users.add(toRegister);
             }
@@ -122,10 +122,16 @@ public class InMemoryDatabase implements Database {
     }
 
     @Override
-    public Playlist getPlaylist(String playlistName, User owner) throws NoSuchPlaylistException {
+    public Playlist getPlaylist(String playlistName, User owner)
+        throws NoSuchPlaylistException, UserNotRegisteredException {
         Playlist toFind = new PlaylistBase(playlistName, owner);
 
         Set<Playlist> userPlaylists = playlistsByUser.get(owner);
+
+        if (userPlaylists == null) {
+            throw new UserNotRegisteredException(
+                "A User with Email: " + owner.email() + " does not exist");
+        }
 
         for (Playlist playlist : userPlaylists) {
             if (toFind.equals(playlist)) {
@@ -212,14 +218,19 @@ public class InMemoryDatabase implements Database {
             "A User with Username: " + user.email() + " and Password: " + user.email() + " does not exists");
     }
 
-    private void checkUserUsername(User user) throws UserAlreadyExistsException, UserNotRegisteredException {
+    private void checkUserEmail(User user)
+        throws UserAlreadyExistsException, UserNotRegisteredException, InvalidEmailException {
+        if (!user.email().contains("@")) {
+            throw new InvalidEmailException("Email: " + user.email() + " is invalid");
+        }
+
         if (users.contains(user)) {
             throw new UserAlreadyExistsException(
-                "A User with Username: " + user.email() + " and Password: " + user.email() + " already exists");
+                "A User with Email: " + user.email() + " and Password: " + user.password() + " already exists");
         }
 
         throw new UserNotRegisteredException(
-            "A User with Username: " + user.email() + " and Password: " + user.email() + " does not exists");
+            "A User with Email: " + user.email() + " and Password: " + user.password() + " does not exists");
     }
 
     private void readUsersFromFile() {
@@ -254,7 +265,6 @@ public class InMemoryDatabase implements Database {
             }
             try (BufferedWriter bufferedWriter = Files.newBufferedWriter(Path.of(fullFileName))) {
 
-
                 for (Object object : objects) {
                     bufferedWriter.write(object.toString() + System.lineSeparator());
                 }
@@ -265,19 +275,23 @@ public class InMemoryDatabase implements Database {
     }
 
     private void readSongsFromFolder() {
-        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Path.of(songsFolder))) {
+        try (DirectoryStream<Path> directoryStream = Files.newDirectoryStream(Path.of(songsFolder), WAV_GLOB)) {
 
             for (Path filePath : directoryStream) {
                 if (!Files.isDirectory(filePath)) {
                     String fileName = filePath.getFileName().toString();
-                    songs.add(Song.of(songsFolder, fileName));
+                    try {
+                        songs.add(Song.of(songsFolder, fileName));
+
+                    } catch (SongNotFoundException e) {
+                        System.out.println(
+                            "The Song File: " + fileName + " is skipped"); // This should not happen in this method
+                    }
                 }
             }
 
         } catch (IOException e) {
             System.out.println("The Songs Folder could not be opened");
-        } catch (SongNotFoundException e) {
-            System.out.println("A SongFile was not Found"); // This should not happen in this method
         }
     }
 

@@ -32,7 +32,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
-    private static final String LOG_FILE_NAME = "logs.txt";
+    private static final String LOG_FILE_NAME = "serverLogs.txt";
 
     private static final long STREAMING_PORT = 7000;
 
@@ -441,9 +441,11 @@ public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
 
     public static void main(String[] args) {
         final int port = 6999;
+
         DefaultSpotifyServer spotifyServer1 = new DefaultSpotifyServer(port, new CommandExecutor(),
             new InMemoryDatabase(Database.SONGS_FOLDER_DEFAULT, Database.DATABASE_FOLDER_DEFAULT,
                 Database.USERS_FILE_NAME_DEFAULT, Database.PLAYLISTS_FILE_NAME_DEFAULT));
+
         new Thread(spotifyServer1, "Spotify Server Thread").start();
     }
 }
