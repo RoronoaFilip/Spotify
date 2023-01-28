@@ -30,7 +30,7 @@ public class SongTest {
 
     @Test
     void testSongOfThrowsSongNotFoundExceptionWhenFileNameDoesNotExist() {
-        assertThrows(SongNotFoundException.class, () -> Song.of("songsTestFolder/", "a song that - does not exist.wav"),
+        assertThrows(SongNotFoundException.class, () -> Song.of("", "a song that - does not exist.wav"),
             "SongNotFoundException expected");
     }
 

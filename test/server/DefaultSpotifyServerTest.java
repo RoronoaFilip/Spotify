@@ -116,7 +116,6 @@ public class DefaultSpotifyServerTest {
         throws UserAlreadyLoggedInException, UserNotRegisteredException, UserNotLoggedInException {
         Mockito.when(database.doesUserExist(user)).thenReturn(true);
         spotifyServer.logIn(user);
-        //selectionKeysByUser.put(user, null);
 
         long userPort = spotifyServer.getPort(user);
 
@@ -124,7 +123,6 @@ public class DefaultSpotifyServerTest {
 
         assertFalse(streamingPortsByUser.containsKey(user), "User was not marked as logged out");
         assertFalse(ports.contains(userPort), "User was not marked as logged out");
-        //assertFalse(selectionKeysByUser.containsKey(user), "User Selection Key was not marked as logged out");
     }
 
     @Test

@@ -255,7 +255,7 @@ public class DatabaseTest {
     }
 
     @Test
-    void testShutdownCreatesFiles() throws IOException {
+    void testCloseCreatesFiles() throws IOException {
         database.close();
 
         InMemoryDatabase database1 = (InMemoryDatabase) database;

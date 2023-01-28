@@ -55,8 +55,6 @@ public class PlaylistTest {
         Collection<Song> expected = List.of(song);
 
         assertIterableEquals(expected, actual.getSongs(), "Songs not Parsed or Filtered Correctly");
-        database.close();
-        deleteDirectoryRecursively(Path.of("testDatabaseFolder/"));
     }
 
     @Test
