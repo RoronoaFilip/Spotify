@@ -24,7 +24,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>A Song saves the amount of times it has been streamed by a User</p>
  */
 public class Song {
-    public static final String SINGER_NAME_REGEX = "\\s*-\\s*";
+    public static final String SINGER_NAME_REGEX = "(\\s*-\\s*)";
     public static final String SINGER_NAME_CONCATENATION = " - ";
     private static final int SINGER = 0;
     private static final int NAME = 1;
