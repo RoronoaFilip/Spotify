@@ -35,7 +35,9 @@ public class InMemoryDatabase implements Database {
 
     private Set<User> users;
     private final Object usersRegisterLock = new Object();
+
     private final Set<Song> songs;
+
     private Map<User, Set<Playlist>> playlistsByUser;
     private final Object playlistLock = new Object();
 
@@ -84,8 +86,8 @@ public class InMemoryDatabase implements Database {
             throw new SongNotFoundException("A Song with the Name: " + fullName + " was not found");
         }
 
-        String songName = split[1];
-        String singerName = split[0];
+        String songName = split[1].strip();
+        String singerName = split[0].strip();
         Song toGet = new Song(songName, singerName);
 
         for (Song song : songs) {
@@ -225,7 +227,7 @@ public class InMemoryDatabase implements Database {
 
         if (users.contains(user)) {
             throw new UserAlreadyExistsException(
-                "A User with Email: " + user.email() + " and Password: " + user.password() + " already exists");
+                "A User with Email: " + user.email() + " already exists");
         }
 
         throw new UserNotRegisteredException(

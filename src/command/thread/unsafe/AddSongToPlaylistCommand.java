@@ -4,9 +4,9 @@ import command.Command;
 import command.CommandType;
 import database.playlist.Playlist;
 import database.playlist.exceptions.NoSuchPlaylistException;
-import server.SpotifyServer;
 import database.song.Song;
 import database.user.User;
+import server.SpotifyServer;
 
 /**
  * Add Song to Playlist Command. Represents a Request from
@@ -40,7 +40,6 @@ public class AddSongToPlaylistCommand extends Command {
         try {
             Playlist playlist = spotifyServer.getDatabase().getPlaylist(playlistName, user);
             playlist.addSong(song);
-
         } catch (NoSuchPlaylistException e) {
             throw new NoSuchPlaylistException("You do not own a Playlist with the Name: " + playlistName);
         }

@@ -33,12 +33,16 @@ public class SongListener implements Runnable {
 
                     dataLine.write(toWrite, 0, readBytes);
                 } while (dataLine.isRunning());
+
             } catch (IllegalArgumentException ignored) {
                 //BufferedInputStream has reached the end
             }
         } catch (IOException ignored) {
             System.out.println("No Song Streamer detected");
         }
+
+        dataLine.drain();
+        dataLine.close();
 
         spotifyClient.resetSourceDataLine();
     }

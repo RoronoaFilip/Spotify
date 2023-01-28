@@ -61,6 +61,8 @@ public class SongStreamer implements Runnable {
 
                     outputStream.write(toWrite, 0, readBytes);
                 }
+
+                outputStream.flush();
             } catch (SocketException ignored) {
                 //The User has Stopped The Song
             }
