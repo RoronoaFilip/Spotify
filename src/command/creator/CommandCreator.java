@@ -12,7 +12,7 @@ import command.thread.unsafe.DisconnectCommand;
 import command.thread.unsafe.LoginCommand;
 import command.thread.unsafe.RegisterCommand;
 import database.user.User;
-import server.DefaultSpotifyServer;
+import server.SpotifyServerTerminatePermission;
 
 /**
  * Creates Command from User Input
@@ -26,7 +26,7 @@ public class CommandCreator {
      * @param spotifyServer the Server
      * @return a parsed Command if the Input is a Valid Command, null otherwise
      */
-    public static Command create(String input, User user, DefaultSpotifyServer spotifyServer) {
+    public static Command create(String input, User user, SpotifyServerTerminatePermission spotifyServer) {
         if (input == null || input.isBlank()) {
             return null;
         }

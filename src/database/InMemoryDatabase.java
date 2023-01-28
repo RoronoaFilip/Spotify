@@ -129,8 +129,7 @@ public class InMemoryDatabase implements Database {
         Set<Playlist> userPlaylists = playlistsByUser.get(owner);
 
         if (userPlaylists == null) {
-            throw new UserNotRegisteredException(
-                "A User with Email: " + owner.email() + " does not exist");
+            throw new UserNotRegisteredException("A User with Email: " + owner.email() + " does not exist");
         }
 
         for (Playlist playlist : userPlaylists) {
@@ -248,7 +247,7 @@ public class InMemoryDatabase implements Database {
         String fileName = databaseFolder + playlistsFileName;
         try (BufferedReader reader = Files.newBufferedReader(Path.of(fileName))) {
 
-            playlistsByUser = reader.lines().map(line -> PlaylistBase.of(line, songsFolder))
+            playlistsByUser = reader.lines().map(line -> PlaylistBase.of(line, this))
                 .collect(Collectors.groupingBy(Playlist::getOwner, Collectors.toSet()));
 
         } catch (IOException ignored) {

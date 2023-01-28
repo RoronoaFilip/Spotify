@@ -2,8 +2,8 @@ package command.thread.unsafe;
 
 import command.Command;
 import command.CommandType;
-import server.SpotifyServer;
 import database.user.User;
+import server.SpotifyServer;
 
 /**
  * Login Command. Represents a Request from the User to login into the System

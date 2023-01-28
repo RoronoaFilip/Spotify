@@ -1,5 +1,6 @@
 package database.playlist;
 
+import database.Database;
 import database.song.Song;
 import database.song.exceptions.SongNotFoundException;
 import database.user.User;
@@ -43,13 +44,13 @@ public class PlaylistBase implements Playlist {
     }
 
     /**
-     * Constructs a Song from a Line equivalent to this Classed toString Method
+     * Constructs a Song from a Line equivalent to this Class' toString Method
      *
      * @param line       the Line to be parsed
-     * @param folderName the Folder to read Songs from using the Song Class' static factory of Method
+     * @param database the Database where the Songs are saved
      * @return a Playlist including the Songs it contains
      */
-    public static Playlist of(String line, String folderName) {
+    public static Playlist of(String line, Database database) {
         String[] ownerSongsSplit = line.split(OWNER_SONGS_REGEX, SPLIT_SIZE_LIMIT);
 
         User owner = User.of(ownerSongsSplit[0]);
@@ -63,7 +64,7 @@ public class PlaylistBase implements Playlist {
                 if (songLine.isBlank()) {
                     continue;
                 }
-                songSet.add(Song.of(folderName, songLine));
+                songSet.add(database.getSongBy(songLine));
             } catch (SongNotFoundException e) {
                 // Skip song that isn't in database
             }
@@ -136,6 +137,6 @@ public class PlaylistBase implements Playlist {
     @Override
     public String toString() {
         return owner.toString() + OWNER_SONGS_REGEX + name + OWNER_SONGS_REGEX +
-               songs.stream().map(Song::getFileName).collect(Collectors.joining(","));
+               songs.stream().map(Song::toString).collect(Collectors.joining(","));
     }
 }

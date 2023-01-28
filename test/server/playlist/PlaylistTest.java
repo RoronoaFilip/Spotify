@@ -1,10 +1,12 @@
-package playlist;
+package server.playlist;
 
+import database.Database;
+import database.InMemoryDatabase;
 import database.playlist.Playlist;
 import database.playlist.PlaylistBase;
-import org.junit.jupiter.api.Test;
 import database.song.Song;
 import database.user.User;
+import org.junit.jupiter.api.Test;
 
 import javax.sound.sampled.AudioFormat;
 import java.util.Collection;
@@ -17,11 +19,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class PlaylistTest {
     private String examplePlaylistString =
-        "filip,123:myPlaylist:My-Recording.wav,A Song That Does Not Exist.wav, Not Even a Proper Song Name  Format";
+        "filip,123:myPlaylist:My-Recording,A Song That - Does Not Exist, Not Even a Proper Song Name  Format";
     private User user = new User("filip", "123");
     private Playlist playlist = new PlaylistBase("myPlaylist", user);
 
     private String testSongAudioFormatString = "PCM_SIGNED 44100.0 16 2 4 44100.0 false";
+
+    private Database database = new InMemoryDatabase("songsTestFolder/", "", "", "");
 
     private AudioFormat audioFormat =
         new AudioFormat(new AudioFormat.Encoding("PCM_SIGNED"), 44100.0f, 16, 2, 4, 44100.0f, false);
@@ -30,7 +34,7 @@ public class PlaylistTest {
 
     @Test
     void testPlaylistOfParsesPlaylistCorrectly() {
-        Playlist actual = PlaylistBase.of(examplePlaylistString, "songsTestFolder/");
+        Playlist actual = PlaylistBase.of(examplePlaylistString, database);
 
         assertEquals(playlist, actual, "Playlist not parsed correctly");
 

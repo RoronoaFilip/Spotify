@@ -28,8 +28,7 @@ public class SongListenerTest {
     private final AudioFormat audioFormat =
         new AudioFormat(new AudioFormat.Encoding("PCM_SIGNED"), 44100.0f, 16, 2, 4, 44100.0f, false);
 
-    private final Song song =
-        new Song("King Of The Fall", "The Weeknd", "My-Recording.wav", audioFormat);
+    private final Song song = new Song("King Of The Fall", "The Weeknd", "My-Recording.wav", audioFormat);
 
     private final Database database = new InMemoryDatabase("songsTestFolder/", "", "", "");
     private final SpotifyServerStreamingPermission spotifyServer =
@@ -47,7 +46,9 @@ public class SongListenerTest {
         spotifyServer.logIn(user);
         long port = spotifyServer.getPort(user);
 
-        new Thread(new SongStreamer((int) port, song, spotifyServer)).start();
+        Thread thread = new Thread(new SongStreamer((int) port, song, spotifyServer));
+        thread.setDaemon(true);
+        thread.start();
 
         client.constructSourceDataLine(testSongAudioFormatString);
 

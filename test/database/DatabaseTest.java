@@ -139,9 +139,9 @@ public class DatabaseTest {
         User newUser = new User(email, pass);
         database.registerUser(email, pass);
 
-        Playlist expected = new PlaylistBase("playlist", newUser);
+        Playlist expected = new PlaylistBase("server/playlist", newUser);
 
-        Playlist actual = database.createPlaylist("playlist", newUser);
+        Playlist actual = database.createPlaylist("server/playlist", newUser);
 
         assertEquals(expected, actual, "The Playlist was not created correctly");
     }
@@ -156,9 +156,9 @@ public class DatabaseTest {
         User newUser = new User(email, pass);
         database.registerUser(email, pass);
 
-        Playlist actual = database.createPlaylist("playlist", newUser);
+        Playlist actual = database.createPlaylist("server/playlist", newUser);
 
-        assertThrows(PlaylistAlreadyExistsException.class, () -> database.createPlaylist("playlist", newUser),
+        assertThrows(PlaylistAlreadyExistsException.class, () -> database.createPlaylist("server/playlist", newUser),
             "PlaylistAlreadyExistsException expected");
     }
 
@@ -168,7 +168,7 @@ public class DatabaseTest {
 
         User newUser = new User(str, str);
 
-        assertThrows(UserNotRegisteredException.class, () -> database.createPlaylist("playlist", newUser),
+        assertThrows(UserNotRegisteredException.class, () -> database.createPlaylist("server/playlist", newUser),
             "UserNotRegisteredException expected");
     }
 

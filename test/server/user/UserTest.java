@@ -1,4 +1,4 @@
-package user;
+package server.user;
 
 import database.user.User;
 import org.junit.jupiter.api.Test;

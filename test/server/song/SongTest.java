@@ -1,4 +1,4 @@
-package song;
+package server.song;
 
 import database.song.Song;
 import org.junit.jupiter.api.Test;
