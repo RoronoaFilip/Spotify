@@ -29,7 +29,7 @@ public class SongListenerTest {
         new AudioFormat(new AudioFormat.Encoding("PCM_SIGNED"), 44100.0f, 16, 2, 4, 44100.0f, false);
 
     private final Song song =
-        new Song("King Of The Fall", "The Weeknd", "The Weeknd-King Of The Fall.wav", audioFormat);
+        new Song("King Of The Fall", "The Weeknd", "My-Recording.wav", audioFormat);
 
     private final Database database = new InMemoryDatabase("songsTestFolder/", "", "", "");
     private final SpotifyServerStreamingPermission spotifyServer =
