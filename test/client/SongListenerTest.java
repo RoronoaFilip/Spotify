@@ -24,11 +24,11 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 public class SongListenerTest {
-    private final String testSongAudioFormatString = "ok PCM_SIGNED 44100.0 16 2 4 44100.0 false 7000";
+    private String testSongAudioFormatString = "ok PCM_SIGNED 48000.0 16 1 2 48000.0 false 7000";
     private final AudioFormat audioFormat =
-        new AudioFormat(new AudioFormat.Encoding("PCM_SIGNED"), 44100.0f, 16, 2, 4, 44100.0f, false);
+        new AudioFormat(new AudioFormat.Encoding("PCM_SIGNED"), 48000.0f, 16, 1, 2, 48000.0f, false);
 
-    private final Song song = new Song("King Of The Fall", "The Weeknd", "My-Recording.wav", audioFormat);
+    private final Song song = new Song("Recording", "My", "My-Recording.wav", audioFormat);
 
     private final Database database = new InMemoryDatabase("songsTestFolder/", "", "", "");
     private final SpotifyServerStreamingPermission spotifyServer =
@@ -36,7 +36,6 @@ public class SongListenerTest {
 
     private final SpotifyClient client = new SpotifyClient();
     private final User user = new User("filip@", "filip");
-
 
     @Test
     void testSongListenerEndsSongCorrectly()

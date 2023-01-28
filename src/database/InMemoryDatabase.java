@@ -214,7 +214,7 @@ public class InMemoryDatabase implements Database {
         }
 
         throw new UserNotRegisteredException(
-            "A User with Username: " + user.email() + " and Password: " + user.email() + " does not exists");
+            "A User with Username: " + user.email() + " and Password: " + user.password() + " does not exists");
     }
 
     private void checkUserEmail(User user)

@@ -1,8 +1,8 @@
-package server.song;
+package database.song;
 
 import database.song.Song;
-import org.junit.jupiter.api.Test;
 import database.song.exceptions.SongNotFoundException;
+import org.junit.jupiter.api.Test;
 
 import javax.sound.sampled.AudioFormat;
 
@@ -15,7 +15,7 @@ public class SongTest {
     private String testSongAudioFormatString = "PCM_SIGNED 48000.0 16 1 2 48000.0 false";
 
     private AudioFormat audioFormat =
-        new AudioFormat(new AudioFormat.Encoding("PCM_SIGNED"), 44100.0f, 16, 2, 4, 44100.0f, false);
+        new AudioFormat(new AudioFormat.Encoding("PCM_SIGNED"), 48000.0f, 16, 1, 2, 48000.0f, false);
 
     private Song song = new Song("Recording", "My", "My-Recording.wav", audioFormat);
 
