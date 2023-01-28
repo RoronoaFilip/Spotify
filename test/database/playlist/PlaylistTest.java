@@ -30,7 +30,7 @@ public class PlaylistTest {
     private AudioFormat audioFormat =
         new AudioFormat(new AudioFormat.Encoding("PCM_SIGNED"), 48000.0f, 16, 1, 2, 48000.0f, false);
 
-    private Song song = new Song("Recording", "My", "My-Recording.wav", audioFormat);
+    private Song song = new Song("Recording", "My", "My - Recording.wav", audioFormat);
 
     static void deleteDirectoryRecursively(Path pathToDelete) throws IOException {
         if (Files.exists(pathToDelete)) {
@@ -46,7 +46,7 @@ public class PlaylistTest {
 
     @Test
     void testPlaylistOfParsesPlaylistCorrectly() throws IOException {
-        Database database = new InMemoryDatabase("songsTestFolder/", "testDatabaseFolder/", "testUsersFile.txt",
+        Database database = new InMemoryDatabase("", "testDatabaseFolder/", "testUsersFile.txt",
             "testPlaylistsFile.txt");
         Playlist actual = PlaylistBase.of(examplePlaylistString, database);
 

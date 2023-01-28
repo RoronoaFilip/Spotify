@@ -28,9 +28,9 @@ public class SongListenerTest {
     private final AudioFormat audioFormat =
         new AudioFormat(new AudioFormat.Encoding("PCM_SIGNED"), 48000.0f, 16, 1, 2, 48000.0f, false);
 
-    private final Song song = new Song("Recording", "My", "My-Recording.wav", audioFormat);
+    private final Song song = new Song("Recording", "My", "My - Recording.wav", audioFormat);
 
-    private final Database database = new InMemoryDatabase("songsTestFolder/", "", "", "");
+    private final Database database = new InMemoryDatabase("", "", "", "");
     private final SpotifyServerStreamingPermission spotifyServer =
         new DefaultSpotifyServer(6999, new CommandExecutor(), database);
 
