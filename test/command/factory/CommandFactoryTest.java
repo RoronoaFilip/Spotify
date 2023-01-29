@@ -1,4 +1,4 @@
-package command.creator;
+package command.factory;
 
 import command.Command;
 import command.CommandType;
@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-public class CommandCreatorTest {
+public class CommandFactoryTest {
     private static final String PLAY_COMMAND = "play bnr-avantim";
     private static final String SEARCH_COMMAND_NOT_ALL = "search van";
     private static final String SEARCH_COMMAND_ALL = "search all";
@@ -36,7 +36,7 @@ public class CommandCreatorTest {
 
     @Test
     void testCreateRecognizesPlayCommand() {
-        Command actual = CommandCreator.create(PLAY_COMMAND, user, spotifyServer);
+        Command actual = CommandFactory.create(PLAY_COMMAND, user, spotifyServer);
 
         assertEquals(CommandType.PLAY_COMMAND, actual.getType(), "Play Command not parsed correctly");
 
@@ -48,7 +48,7 @@ public class CommandCreatorTest {
 
     @Test
     void testCreateRecognizesSearchCommandNotAll() {
-        Command actual = CommandCreator.create(SEARCH_COMMAND_NOT_ALL, user, spotifyServer);
+        Command actual = CommandFactory.create(SEARCH_COMMAND_NOT_ALL, user, spotifyServer);
 
         assertEquals(CommandType.SEARCH_COMMAND, actual.getType(), "Search Command not parsed correctly");
 
@@ -59,7 +59,7 @@ public class CommandCreatorTest {
 
     @Test
     void testCreateRecognizesSearchCommandAll() {
-        Command actual = CommandCreator.create(SEARCH_COMMAND_ALL, user, spotifyServer);
+        Command actual = CommandFactory.create(SEARCH_COMMAND_ALL, user, spotifyServer);
 
         assertEquals(CommandType.SEARCH_COMMAND, actual.getType(), "Search Command not parsed correctly");
 
@@ -70,7 +70,7 @@ public class CommandCreatorTest {
 
     @Test
     void testCreateRecognizesShowPlaylistCommandNoOwner() {
-        Command actual = CommandCreator.create(SHOW_PLAYLIST_COMMAND_NO_OWNER, user, spotifyServer);
+        Command actual = CommandFactory.create(SHOW_PLAYLIST_COMMAND_NO_OWNER, user, spotifyServer);
 
         assertEquals(CommandType.SHOW_PLAYLIST_COMMAND, actual.getType(), "Show Playlist Command not parsed correctly");
 
@@ -81,7 +81,7 @@ public class CommandCreatorTest {
 
     @Test
     void testCreateRecognizesShowPlaylistCommandWithOwner() {
-        Command actual = CommandCreator.create(SHOW_PLAYLIST_COMMAND_WITH_OWNER, user, spotifyServer);
+        Command actual = CommandFactory.create(SHOW_PLAYLIST_COMMAND_WITH_OWNER, user, spotifyServer);
 
         assertEquals(CommandType.SHOW_PLAYLIST_COMMAND, actual.getType(), "Show Playlist Command not parsed correctly");
 
@@ -92,14 +92,14 @@ public class CommandCreatorTest {
 
     @Test
     void testCreateRecognizesTerminateCommand() {
-        Command actual = CommandCreator.create(TERMINATE_COMMAND, user, spotifyServer);
+        Command actual = CommandFactory.create(TERMINATE_COMMAND, user, spotifyServer);
 
         assertEquals(CommandType.TERMINATE_COMMAND, actual.getType(), "Terminate Command not parsed correctly");
     }
 
     @Test
     void testCreateRecognizesTopSongsCommandNotAll() {
-        Command actual = CommandCreator.create(TOP_SONGS_COMMAND_NOT_ALL, user, spotifyServer);
+        Command actual = CommandFactory.create(TOP_SONGS_COMMAND_NOT_ALL, user, spotifyServer);
 
         assertEquals(CommandType.TOP_SONGS_COMMAND, actual.getType(), "Search Command not parsed correctly");
 
@@ -110,7 +110,7 @@ public class CommandCreatorTest {
 
     @Test
     void testCreateRecognizesTopSongsCommandAll() {
-        Command actual = CommandCreator.create(TOP_SONGS_COMMAND_ALL, user, spotifyServer);
+        Command actual = CommandFactory.create(TOP_SONGS_COMMAND_ALL, user, spotifyServer);
 
         assertEquals(CommandType.TOP_SONGS_COMMAND, actual.getType(), "Top Songs Command not parsed correctly");
 
@@ -121,7 +121,7 @@ public class CommandCreatorTest {
 
     @Test
     void testCreateRecognizesAddSongsToPlaylistCommand() {
-        Command actual = CommandCreator.create(ADD_SONG_TO_PLAYLIST_COMMAND, user, spotifyServer);
+        Command actual = CommandFactory.create(ADD_SONG_TO_PLAYLIST_COMMAND, user, spotifyServer);
 
         assertEquals(CommandType.ADD_SONG_TO_PLAYLIST_COMMAND, actual.getType(),
             "Add Song to Playlist Command not parsed correctly");
@@ -129,7 +129,7 @@ public class CommandCreatorTest {
 
     @Test
     void testCreateRecognizesCreatePlaylistCommand() {
-        Command actual = CommandCreator.create(CREATE_PLAYLIST_COMMAND, user, spotifyServer);
+        Command actual = CommandFactory.create(CREATE_PLAYLIST_COMMAND, user, spotifyServer);
 
         assertEquals(CommandType.CREATE_PLAYLIST_COMMAND, actual.getType(),
             "Create Playlist Command not parsed correctly");
@@ -137,31 +137,31 @@ public class CommandCreatorTest {
 
     @Test
     void testCreateRecognizesDisconnectCommand() {
-        Command actual = CommandCreator.create(DISCONNECT_COMMAND, user, spotifyServer);
+        Command actual = CommandFactory.create(DISCONNECT_COMMAND, user, spotifyServer);
 
         assertEquals(CommandType.DISCONNECT_COMMAND, actual.getType(), "Disconnect Command not parsed correctly");
     }
 
     @Test
     void testCreateRecognizesLoginCommand() {
-        Command actual = CommandCreator.create(LOGIN_COMMAND, user, spotifyServer);
+        Command actual = CommandFactory.create(LOGIN_COMMAND, user, spotifyServer);
 
         assertEquals(CommandType.LOGIN_COMMAND, actual.getType(), "Logic Command not parsed correctly");
     }
 
     @Test
     void testCreateRecognizesRegisterCommand() {
-        Command actual = CommandCreator.create(REGISTER_COMMAND, user, spotifyServer);
+        Command actual = CommandFactory.create(REGISTER_COMMAND, user, spotifyServer);
 
         assertEquals(CommandType.REGISTER_COMMAND, actual.getType(), "Register Command not parsed correctly");
     }
 
     @Test
     void testCreateRecognizesUnknownCommand() {
-        Command actual1 = CommandCreator.create("", user, spotifyServer);
-        Command actual2 = CommandCreator.create(null, user, spotifyServer);
-        Command actual3 = CommandCreator.create("add-song-to", user, spotifyServer);
-        Command actual4 = CommandCreator.create("unknown command written here", user, spotifyServer);
+        Command actual1 = CommandFactory.create("", user, spotifyServer);
+        Command actual2 = CommandFactory.create(null, user, spotifyServer);
+        Command actual3 = CommandFactory.create("add-song-to", user, spotifyServer);
+        Command actual4 = CommandFactory.create("unknown command written here", user, spotifyServer);
 
         assertNull(actual1, "Unknown Command not parsed correctly");
         assertNull(actual2, "Unknown Command not parsed correctly");

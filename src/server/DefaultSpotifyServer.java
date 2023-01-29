@@ -2,7 +2,7 @@ package server;
 
 import command.Command;
 import command.CommandType;
-import command.creator.CommandCreator;
+import command.factory.CommandFactory;
 import command.executor.CommandExecutor;
 import command.thread.unsafe.LoginCommand;
 import database.Database;
@@ -98,7 +98,7 @@ public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
                             printClientInput(clientInput, key);
 
                             String output;
-                            Command cmd = CommandCreator.create(clientInput, (User) key.attachment(), this);
+                            Command cmd = CommandFactory.create(clientInput, (User) key.attachment(), this);
                             try {
                                 checkCommand(cmd, key);
                                 output = commandExecutor.execute(cmd);

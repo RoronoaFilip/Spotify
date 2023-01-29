@@ -1,4 +1,4 @@
-package command.creator;
+package command.factory;
 
 import command.Command;
 import command.thread.safe.PlayCommand;
@@ -17,7 +17,7 @@ import server.SpotifyServerTerminatePermission;
 /**
  * Creates Command from User Input
  */
-public class CommandCreator {
+public class CommandFactory {
     /**
      * Parsed User input and Creates a Command based on the first Word in the Input
      *
