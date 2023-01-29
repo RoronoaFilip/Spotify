@@ -2,8 +2,8 @@ package spotify.server;
 
 import spotify.command.Command;
 import spotify.command.CommandType;
-import spotify.command.factory.CommandFactory;
 import spotify.command.executor.CommandExecutor;
+import spotify.command.factory.CommandFactory;
 import spotify.command.thread.unsafe.LoginCommand;
 import spotify.database.Database;
 import spotify.database.InMemoryDatabase;

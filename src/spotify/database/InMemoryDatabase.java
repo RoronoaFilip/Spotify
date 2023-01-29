@@ -226,8 +226,7 @@ public class InMemoryDatabase implements Database {
         }
 
         if (users.contains(user)) {
-            throw new UserAlreadyExistsException(
-                "A User with Email: " + user.email() + " already exists");
+            throw new UserAlreadyExistsException("A User with Email: " + user.email() + " already exists");
         }
 
         throw new UserNotRegisteredException(

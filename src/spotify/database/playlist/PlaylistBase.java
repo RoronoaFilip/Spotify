@@ -46,7 +46,7 @@ public class PlaylistBase implements Playlist {
     /**
      * Constructs a Song from a Line equivalent to this Class' toString Method
      *
-     * @param line       the Line to be parsed
+     * @param line     the Line to be parsed
      * @param database the Database where the Songs are saved
      * @return a Playlist including the Songs it contains
      */
