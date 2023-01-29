@@ -1,6 +1,5 @@
 package spotify.client;
 
-import spotify.client.SpotifyClient;
 import spotify.command.executor.CommandExecutor;
 import spotify.database.Database;
 import spotify.database.InMemoryDatabase;
@@ -52,7 +51,7 @@ public class SongListenerTest {
 
         client.constructSourceDataLine(testSongAudioFormatString);
 
-        assertThrows(PortCurrentlyStreamingException.class, () -> spotifyServer.isPortStreaming(port),
+        assertThrows(PortCurrentlyStreamingException.class, () -> spotifyServer.isPortLocked(port),
             "PortCurrentlyStreamingException expected");
 
         assertNotNull(client.getSourceDataLine(), "SourceDataLine must not be null while Song is playing");
@@ -60,6 +59,6 @@ public class SongListenerTest {
         SourceDataLine sourceDataLine = client.getSourceDataLine();
         sourceDataLine.stop();
 
-        assertDoesNotThrow(() -> spotifyServer.isPortStreaming(6999), "No Exception expected");
+        assertDoesNotThrow(() -> spotifyServer.isPortLocked(6999), "No Exception expected");
     }
 }

@@ -1,14 +1,13 @@
 package spotify.command.factory;
 
+import org.junit.jupiter.api.Test;
 import spotify.command.Command;
 import spotify.command.CommandType;
-import spotify.command.factory.CommandFactory;
 import spotify.command.thread.safe.PlayCommand;
 import spotify.command.thread.safe.SearchCommand;
 import spotify.command.thread.safe.ShowPlaylistCommand;
 import spotify.command.thread.safe.TopSongsCommand;
 import spotify.database.user.User;
-import org.junit.jupiter.api.Test;
 import spotify.server.DefaultSpotifyServer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

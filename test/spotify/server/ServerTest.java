@@ -142,49 +142,49 @@ public class ServerTest {
     }
 
     @Test
-    void testAddPortStreamingMarksUserStreamingPortAsStreaming()
+    void testLockPortMarksUserStreamingPortAsStreaming()
         throws UserAlreadyLoggedInException, UserNotRegisteredException {
         Mockito.when(database.doesUserExist(user)).thenReturn(true);
         spotifyServer.logIn(user);
         long userPort = spotifyServer.getPort(user);
 
-        spotifyServer.addPortStreaming(userPort);
+        spotifyServer.lockPort(userPort);
 
         assertTrue(currentlyStreamingPorts.contains(userPort), "User Port not marked as streaming");
     }
 
     @Test
-    void testAddPortStreamingDoesNotAddPortWhichHasNotBeenAssignToAUser() {
+    void testLockPortDoesNotAddPortWhichHasNotBeenAssignToAUser() {
         Mockito.when(database.doesUserExist(user)).thenReturn(true);
 
-        spotifyServer.addPortStreaming(123);
+        spotifyServer.lockPort(123);
 
         assertFalse(currentlyStreamingPorts.contains((long) 123), "User Port not marked as streaming");
     }
 
     @Test
-    void testRemovePortStreamingRemovesPort() throws UserAlreadyLoggedInException, UserNotRegisteredException {
+    void testFreePortRemovesPort() throws UserAlreadyLoggedInException, UserNotRegisteredException {
         Mockito.when(database.doesUserExist(user)).thenReturn(true);
         spotifyServer.logIn(user);
         long userPort = spotifyServer.getPort(user);
 
-        spotifyServer.addPortStreaming(userPort);
+        spotifyServer.lockPort(userPort);
 
-        spotifyServer.removePortStreaming(userPort);
+        spotifyServer.freePort(userPort);
 
         assertFalse(currentlyStreamingPorts.contains(userPort), "User Port not marked as not streaming");
     }
 
     @Test
-    void testIsPortStreamingThrowsPortCurrentlyStreamingExceptionWhenPortIsStreaming()
+    void testIsPortLockedThrowsPortCurrentlyStreamingExceptionWhenPortIsStreaming()
         throws UserAlreadyLoggedInException, UserNotRegisteredException {
         Mockito.when(database.doesUserExist(user)).thenReturn(true);
         spotifyServer.logIn(user);
         long userPort = spotifyServer.getPort(user);
 
-        spotifyServer.addPortStreaming(userPort);
+        spotifyServer.lockPort(userPort);
 
-        assertThrows(PortCurrentlyStreamingException.class, () -> spotifyServer.isPortStreaming(userPort),
+        assertThrows(PortCurrentlyStreamingException.class, () -> spotifyServer.isPortLocked(userPort),
             "PortCurrentlyStreamingException expected");
     }
 }

@@ -17,7 +17,7 @@ public interface SpotifyServerStreamingPermission extends SpotifyServer {
      *
      * @param port the Port to be marked as Streaming
      */
-    void addPortStreaming(long port);
+    void lockPort(long port);
 
     /**
      * Checks if the {@code port} is marked as Streaming
@@ -25,14 +25,14 @@ public interface SpotifyServerStreamingPermission extends SpotifyServer {
      * @param port the Port to be checked
      * @throws PortCurrentlyStreamingException if the {@code port} is marked as Streaming
      */
-    void isPortStreaming(long port) throws PortCurrentlyStreamingException;
+    void isPortLocked(long port) throws PortCurrentlyStreamingException;
 
     /**
      * Marks a Port as Free
      *
      * @param port the Port to be marked as Free
      */
-    void removePortStreaming(long port);
+    void freePort(long port);
 
     /**
      * Gets the User Streaming Port

@@ -47,7 +47,7 @@ public class SongStreamer implements Runnable {
 
     @Override
     public void run() {
-        spotifyServer.addPortStreaming(port);
+        spotifyServer.lockPort(port);
 
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             try (Socket socket = serverSocket.accept();
@@ -71,7 +71,7 @@ public class SongStreamer implements Runnable {
         }
 
         song.stream();
-        spotifyServer.removePortStreaming(port);
+        spotifyServer.freePort(port);
 
         System.out.println("Song has ended");
     }

@@ -34,7 +34,7 @@ public class PlayCommand extends Command {
 
         long userStreamingPort = spotifyServerStreamingPermission.getPort(user);
 
-        spotifyServerStreamingPermission.isPortStreaming(userStreamingPort);
+        spotifyServerStreamingPermission.isPortLocked(userStreamingPort);
 
         SongStreamer streamer = new SongStreamer((int) userStreamingPort, toPlay, spotifyServerStreamingPermission);
 

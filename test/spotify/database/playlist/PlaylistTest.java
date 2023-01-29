@@ -1,18 +1,12 @@
 package spotify.database.playlist;
 
+import org.junit.jupiter.api.Test;
 import spotify.database.Database;
 import spotify.database.InMemoryDatabase;
-import spotify.database.playlist.Playlist;
-import spotify.database.playlist.PlaylistBase;
 import spotify.database.song.Song;
 import spotify.database.user.User;
-import org.junit.jupiter.api.Test;
 
 import javax.sound.sampled.AudioFormat;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Collection;
 import java.util.List;
 
@@ -34,22 +28,10 @@ public class PlaylistTest {
 
     private Song song = new Song("Recording", "My", "My - Recording.wav", audioFormat);
 
-    static void deleteDirectoryRecursively(Path pathToDelete) throws IOException {
-        if (Files.exists(pathToDelete)) {
-            File[] allContents = pathToDelete.toFile().listFiles();
-            if (allContents != null) {
-                for (File file : allContents) {
-                    deleteDirectoryRecursively(file.toPath());
-                }
-            }
-            Files.delete(pathToDelete);
-        }
-    }
-
     @Test
-    void testPlaylistOfParsesPlaylistCorrectly() throws IOException {
-        Database database = new InMemoryDatabase("", "testDatabaseFolder/", "testUsersFile.txt",
-            "testPlaylistsFile.txt");
+    void testPlaylistOfParsesPlaylistCorrectly() {
+        Database database =
+            new InMemoryDatabase("", "testDatabaseFolder/", "testUsersFile.txt", "testPlaylistsFile.txt");
         Playlist actual = PlaylistBase.of(examplePlaylistString, database);
 
         assertEquals(playlist, actual, "Playlist not parsed correctly");

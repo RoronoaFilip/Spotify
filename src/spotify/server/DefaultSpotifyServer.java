@@ -391,7 +391,7 @@ public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
     }
 
     @Override
-    public void addPortStreaming(long port) {
+    public void lockPort(long port) {
         if (!ports.contains(port)) {
             return;
         }
@@ -400,7 +400,7 @@ public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
     }
 
     @Override
-    public void isPortStreaming(long port) throws PortCurrentlyStreamingException {
+    public void isPortLocked(long port) throws PortCurrentlyStreamingException {
         if (currentlyStreamingPorts.contains(port)) {
             throw new PortCurrentlyStreamingException(
                 "You are currently listening to a Song. Stop the current one and than try again");
@@ -408,9 +408,9 @@ public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
     }
 
     @Override
-    public void removePortStreaming(long port) {
+    public void freePort(long port) {
         try {
-            isPortStreaming(port);
+            isPortLocked(port);
         } catch (PortCurrentlyStreamingException ignore) {
             // Ignore - this is what we want
         }
