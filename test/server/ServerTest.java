@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @ExtendWith(MockitoExtension.class)
-public class DefaultSpotifyServerTest {
+public class ServerTest {
     private static final String TEST_STRING = "testString";
 
     private Database database;
@@ -112,7 +112,7 @@ public class DefaultSpotifyServerTest {
     }
 
     @Test
-    void testLogOutWorkCorrectly()
+    void testLogOutWorksCorrectly()
         throws UserAlreadyLoggedInException, UserNotRegisteredException, UserNotLoggedInException {
         Mockito.when(database.doesUserExist(user)).thenReturn(true);
         spotifyServer.logIn(user);
@@ -123,6 +123,22 @@ public class DefaultSpotifyServerTest {
 
         assertFalse(streamingPortsByUser.containsKey(user), "User was not marked as logged out");
         assertFalse(ports.contains(userPort), "User was not marked as logged out");
+    }
+
+    @Test
+    void testLogOutThrowsUserNotLoggedInException() {
+        Mockito.when(database.doesUserExist(user)).thenReturn(true);
+
+        assertThrows(UserNotLoggedInException.class, () -> spotifyServer.logOut(user),
+            "UserNotLoggedInException expected");
+    }
+
+    @Test
+    void testLogOutThrowsUserNotRegisteredException() {
+        Mockito.when(database.doesUserExist(user)).thenReturn(false);
+
+        assertThrows(UserNotRegisteredException.class, () -> spotifyServer.logOut(user),
+            "UserNotRegisteredException expected");
     }
 
     @Test
