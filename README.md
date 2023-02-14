@@ -1,10 +1,12 @@
 # Spotify
-
+#### This is a Project made for passing the MJT Course @ FMI. Link to the Project [here](https://github.com/fmi/java-course/blob/master/course-projects/spotify.md).
+##
 This is a Program that Streams Music. It consists of a `Server` and a `Client`.
 
 ## Server
 
 The `Server` is a Thread and can be started by calling the `start()` Method of a Thread created with an Instance of the `Server` Class.  
+  
 The `Server` accepts an Instance of a `Database` Interface, which in turn accepts the following four File Names as Strings:
 
 - A File where the Users' Information is saved.
@@ -35,9 +37,15 @@ The `Client` is a Thread that can be started once the `Server` is up and running
 | `add-song-to` | \<name_of_the_playlist> \<artist-song> | Adds a Song to a Playlist, if the current User has a Playlist with such Name | "add-song-to my_favorites Queen - Bohemian Rapsody" |
 | `show-playlist` | \<name_of_the_playlist> | Shows the Songs in a given Playlist | "show-playlist my_favorites" |
 | `play` | \<artist-song> | Plays a Song, if it exists in the Database. The Song must be inputed like this: \<Artist Name> - \<Song Name> | "play Queen - Bohemian Rhapsody" |
-| stop | | Stops a song | "stop" |
+| stop | | Stops a song | "stop" |  
 
 For additional Information about the Requests refer to the javadoc in the `Command` Classes.  
+
+## Songs
+All Songs must be saved in `.wav` Format with the Name of the Artist followed by a `-` and the Song Name. Example: "Queen - Bohemian Rapsody.wav".  
+
+For additional Information about the Songs refer to the javadoc of the `Song` Class and the javadoc of the `Database` Class' Implementation, more specifically how the Songs are read from the specified Folder.
+##
 
 ## Responses
 |Example Response|Description|
