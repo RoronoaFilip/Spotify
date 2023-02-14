@@ -63,4 +63,4 @@ The `Client` must create an Instance of the `SourceDataLine` Class from the java
   
 To stop the Song, the `Client` must call the `stop()` Method of the `SourceDataLine` Object. The Thread from the `Server`'s side will stop automatically without throwing Exceptions.
 
-That's it! Enjoy streaming your favorite music with the Spotify Program.
+That's it! Enjoy streaming your favorite Music with my simple Spotify Program.
