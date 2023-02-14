@@ -4,10 +4,7 @@
 This is a Program that Streams Music. It consists of a `Server` and a `Client`.
 
 ## Server
-
-The `Server` is a Thread and can be started by calling the `start()` Method of a Thread created with an Instance of the `Server` Class.  
-  
-The `Server` accepts an Instance of a `Database` Interface, which in turn accepts the following four File Names as Strings:
+The `Server` accepts an Instance of the `CommandExecutor` Class and the `Database` Interface, which in turn accepts the following four File Names as Strings:
 
 - A File where the Users' Information is saved.
 - A File where the Playlists are saved.
@@ -19,10 +16,9 @@ Default File Names are present in the `Database` Interface. For additional Infom
 The `Server` handles the Requests through the `java.nio` API.
 
 ## Client
+The `Client` is a Thread that can be started once the `Server` is up and running.  
 
-The `Client` is a Thread and can be started by calling the `start()` method of a Thread created with an Instance of the `Client` Class.
-
-The `Client` is a Thread that can be started once the `Server` is up and running. It communicates with the `Server` through the following Requests:
+It communicates with the `Server` through the following Requests:
 
 ## Requests
 |Command|Needed Parameters|What It Does|Example Request|
@@ -57,13 +53,16 @@ Start the `Server` by calling the `start()` Method of a Thread created with an I
 
 The `Database` Object, which implements `AutoCloseable`, passed in the Server's Constructor will read all Information from the specified in it's Constructor Files and Folders. If any of the Files do not exist, they will be created once the Program ends.  
 
-Start a `Client` by calling the `start()` Method of a Thread created with an Instance of the `Client` Class.  
+Start a `Client` by calling the `start()` Method of a Thread created with an Instance of the `Client` Class. A `Client` can connect to the `Server` only after the `Server` has already been started.  
 
 An unregistered `Client` must `register`. A Registered `Client` can only `login`. A logged in `Client` can do everything except `register` and `login`.
 
+## Stopping the Program
 A `Client` can log out by sending a `disconnect` Request. 
 
-A `Client` can stop the `Server` by sending a `terminate` Request. This will call the `close()` Method of the `Database` and all current Information will be saved in the corresponding Files. The Information can be loaded by starting the Program again with these Files passed in the `Database`'s Constructor.
+A `Client` can stop the `Server` by sending a `terminate` Request. This will call the `close()` Method of the `Database` and all current Information will be saved in the corresponding Files.  
+
+The saved Information can be loaded by starting the Program again with these Files passed in the `Database`'s Constructor.
 
 ## Streaming a Song
 The `play` Command starts a `java.net` Connection that streams a Song to the `Client` if the `Client` connects to it.  
@@ -73,5 +72,7 @@ The `Server` starts a Daemon Thread that is going to read the Song file as Bytes
 The `Client` must create an Instance of the `SourceDataLine` Class from the java Sound API from the received Response, a Thread that connects to the `Server`'s thread through a `java.net` Connection to read the song (as bytes) and write them to the `SourceDataLine` Object.  
   
 To stop the Song, the `Client` must call the `stop()` Method of the `SourceDataLine` Object. The Thread from the `Server`'s side will stop automatically without throwing Exceptions.
+
+The Unit Tests require Mockito and the `My - Recording.wav` File to run properly.
 
 Enjoy streaming your favorite Music with my simple Spotify Program.
