@@ -1,26 +1,26 @@
 # Spotify
 
-This is a program that streams music. It consists of a server and a client.
+This is a Program that Streams music. It consists of a server and a client.
 
 ## Server
 
-The server is a thread and can be started by calling the `start()` method in the `Server` class.  
-The server accepts an instance of a `Database` interface, which in turn accepts the following four file names as strings:
+The `Server` is a Thread and can be started by calling the `start()` method of a Thread created with an instance of the `Server` class.  
+The `Server` accepts an instance of a `Database` interface, which in turn accepts the following four file names as strings:
 
 - A file where the users' information is saved.
 - A file where the playlists are saved.
 - A path to the folder where the files in points 1 and 2 are saved.
 - A folder where the songs are saved.  
 
-Default file names are present in the `Database` interface.  
+Default file names are present in the `Database` interface. For additional Infomation refer to the `Database` interface and its Implementations.  
 
 The `Server` handles the requests through the `java.nio` API.
 
 ## Client
 
-The client is a thread and can be started by calling the `start()` method in the `Client` class.
+The `Client` is a thread and can be started by calling the `start()` method of a Thread created with an instance of the `Client` class.
 
-The client is a thread that can be started once the server is up and running. It communicates with the server through the following requests:
+The `Client` is a thread that can be started once the server is up and running. It communicates with the server through the following requests:
 
 ## Requests
 |Command|Needed Parameters|What It Does|Example Request|
@@ -41,7 +41,7 @@ For addition information about the requests refer to the javadoc in the `Command
 
 ## Responses
 |Example Response|Description|
-|---|---|
+|:-:|:-:|
 | "ok PCM_SIGNED 48000.0 16 1 2 48000.0 false 7000" | Response for the `play` command. If it doesn't start, `ok` means the song doesn't exist. |
 | String | All other commands return a String that can be printed |
  
