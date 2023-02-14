@@ -73,6 +73,8 @@ The `Client` must create an Instance of the `SourceDataLine` Class from the java
   
 To stop the Song, the `Client` must call the `stop()` Method of the `SourceDataLine` Object. The Thread from the `Server`'s side will stop automatically without throwing Exceptions.
 
+##
 The Unit Tests require Mockito and the `My - Recording.wav` File to run properly.
+##
 
 Enjoy streaming your favorite Music with my simple Spotify Program.
