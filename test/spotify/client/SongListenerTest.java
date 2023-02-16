@@ -1,17 +1,17 @@
 package spotify.client;
 
-import spotify.command.executor.CommandExecutor;
+import spotify.server.command.executor.CommandExecutor;
 import spotify.database.Database;
 import spotify.database.InMemoryDatabase;
 import spotify.database.song.Song;
-import spotify.database.user.User;
-import spotify.database.user.exceptions.InvalidEmailException;
-import spotify.database.user.exceptions.UserAlreadyExistsException;
-import spotify.database.user.exceptions.UserAlreadyLoggedInException;
-import spotify.database.user.exceptions.UserNotRegisteredException;
+import spotify.server.SpotifyServer;
+import spotify.user.User;
+import spotify.user.exceptions.InvalidEmailException;
+import spotify.user.exceptions.UserAlreadyExistsException;
+import spotify.user.exceptions.UserAlreadyLoggedInException;
+import spotify.user.exceptions.UserNotRegisteredException;
 import org.junit.jupiter.api.Test;
 import spotify.server.DefaultSpotifyServer;
-import spotify.server.SpotifyServerStreamingPermission;
 import spotify.server.exceptions.PortCurrentlyStreamingException;
 import spotify.server.streamer.SongStreamer;
 
@@ -31,7 +31,7 @@ public class SongListenerTest {
     private final Song song = new Song("Recording", "My", "My - Recording.wav", audioFormat);
 
     private final Database database = new InMemoryDatabase("", "", "", "");
-    private final SpotifyServerStreamingPermission spotifyServer =
+    private final SpotifyServer spotifyServer =
         new DefaultSpotifyServer(6999, new CommandExecutor(), database);
 
     private final SpotifyClient client = new SpotifyClient();
@@ -42,8 +42,8 @@ public class SongListenerTest {
         throws LineUnavailableException, UserAlreadyLoggedInException, UserNotRegisteredException,
         UserAlreadyExistsException, InvalidEmailException {
         database.registerUser("filip@", "filip");
-        spotifyServer.logIn(user);
-        long port = spotifyServer.getPort(user);
+        spotifyServer.getUserService().logIn(user);
+        long port = spotifyServer.getUserService().getPort(user);
 
         Thread thread = new Thread(new SongStreamer((int) port, song, spotifyServer));
         thread.setDaemon(true);
@@ -51,7 +51,7 @@ public class SongListenerTest {
 
         client.constructSourceDataLine(testSongAudioFormatString);
 
-        assertThrows(PortCurrentlyStreamingException.class, () -> spotifyServer.isPortLocked(port),
+        assertThrows(PortCurrentlyStreamingException.class, () -> spotifyServer.getUserService().isPortLocked(port),
             "PortCurrentlyStreamingException expected");
 
         assertNotNull(client.getSourceDataLine(), "SourceDataLine must not be null while Song is playing");
@@ -59,6 +59,6 @@ public class SongListenerTest {
         SourceDataLine sourceDataLine = client.getSourceDataLine();
         sourceDataLine.stop();
 
-        assertDoesNotThrow(() -> spotifyServer.isPortLocked(6999), "No Exception expected");
+        assertDoesNotThrow(() -> spotifyServer.getUserService().isPortLocked(6999), "No Exception expected");
     }
 }

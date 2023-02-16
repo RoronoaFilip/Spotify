@@ -1,16 +1,15 @@
 package spotify.database;
 
-import spotify.database.InMemoryDatabase;
 import spotify.database.playlist.Playlist;
 import spotify.database.playlist.PlaylistBase;
 import spotify.database.playlist.exceptions.NoSuchPlaylistException;
 import spotify.database.playlist.exceptions.PlaylistAlreadyExistsException;
 import spotify.database.song.Song;
 import spotify.database.song.exceptions.SongNotFoundException;
-import spotify.database.user.User;
-import spotify.database.user.exceptions.InvalidEmailException;
-import spotify.database.user.exceptions.UserAlreadyExistsException;
-import spotify.database.user.exceptions.UserNotRegisteredException;
+import spotify.user.User;
+import spotify.user.exceptions.InvalidEmailException;
+import spotify.user.exceptions.UserAlreadyExistsException;
+import spotify.user.exceptions.UserNotRegisteredException;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

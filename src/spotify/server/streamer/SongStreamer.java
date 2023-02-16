@@ -1,7 +1,7 @@
 package spotify.server.streamer;
 
 import spotify.database.song.Song;
-import spotify.server.SpotifyServerStreamingPermission;
+import spotify.server.SpotifyServer;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -37,9 +37,9 @@ import java.nio.file.Path;
 public class SongStreamer implements Runnable {
     private final int port;
     private final Song song;
-    private final SpotifyServerStreamingPermission spotifyServer;
+    private final SpotifyServer spotifyServer;
 
-    public SongStreamer(int port, Song song, SpotifyServerStreamingPermission spotifyServer) {
+    public SongStreamer(int port, Song song, SpotifyServer spotifyServer) {
         this.port = port;
         this.song = song;
         this.spotifyServer = spotifyServer;
@@ -47,7 +47,7 @@ public class SongStreamer implements Runnable {
 
     @Override
     public void run() {
-        spotifyServer.lockPort(port);
+        spotifyServer.getUserService().lockPort(port);
 
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             try (Socket socket = serverSocket.accept();
@@ -71,7 +71,7 @@ public class SongStreamer implements Runnable {
         }
 
         song.stream();
-        spotifyServer.freePort(port);
+        spotifyServer.getUserService().freePort(port);
 
         System.out.println("Song has ended");
     }

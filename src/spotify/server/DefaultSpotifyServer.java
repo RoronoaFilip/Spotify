@@ -1,18 +1,15 @@
 package spotify.server;
 
-import spotify.command.Command;
-import spotify.command.CommandType;
-import spotify.command.executor.CommandExecutor;
-import spotify.command.factory.CommandFactory;
-import spotify.command.thread.unsafe.LoginCommand;
 import spotify.database.Database;
 import spotify.database.InMemoryDatabase;
-import spotify.database.user.User;
-import spotify.database.user.exceptions.UserAlreadyLoggedInException;
-import spotify.database.user.exceptions.UserNotLoggedInException;
-import spotify.database.user.exceptions.UserNotRegisteredException;
 import spotify.logger.SpotifyLogger;
-import spotify.server.exceptions.PortCurrentlyStreamingException;
+import spotify.server.command.Command;
+import spotify.server.command.executor.CommandExecutor;
+import spotify.server.command.factory.CommandFactory;
+import spotify.server.command.validator.CommandValidator;
+import spotify.user.User;
+import spotify.user.service.DefaultUserService;
+import spotify.user.service.UserService;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -22,12 +19,7 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
-import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
 
 public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
     private static final String LOG_FILE_NAME = "serverLogs.txt";
@@ -39,7 +31,8 @@ public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
 
     private final CommandExecutor commandExecutor;
     private final Database database;
-    private SpotifyLogger logger;
+    private final UserService userService;
+    private final SpotifyLogger logger;
 
     private final int port;
     private boolean isServerWorking;
@@ -47,23 +40,14 @@ public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
     private final ByteBuffer buffer;
     private Selector selector;
 
-    private final Map<User, Long> streamingPortsByUser;
-    private final Map<User, SelectionKey> selectionKeysByUser;
-    private final Set<Long> currentlyStreamingPorts;
-    private final TreeSet<Long> ports;
-    private final Object currentSessionLock = new Object();
-
     public DefaultSpotifyServer(int port, CommandExecutor commandExecutor, Database database) {
         this.port = port;
         this.commandExecutor = commandExecutor;
         this.logger = new SpotifyLogger(LOG_FILE_NAME);
 
-        this.buffer = ByteBuffer.allocate(BUFFER_SIZE);
+        this.userService = new DefaultUserService(STREAMING_PORT, database);
 
-        streamingPortsByUser = new HashMap<>();
-        selectionKeysByUser = new HashMap<>();
-        currentlyStreamingPorts = new HashSet<>();
-        ports = new TreeSet<>();
+        this.buffer = ByteBuffer.allocate(BUFFER_SIZE);
 
         this.database = database;
         isServerWorking = true;
@@ -94,20 +78,20 @@ public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
                                 continue;
                             }
 
-                            logger.printClientInput(clientInput, key);
+                            logger.logClientInput(clientInput, key);
 
                             String output;
                             Command cmd = CommandFactory.create(clientInput, (User) key.attachment(), this);
                             try {
-                                checkCommand(cmd, key);
+                                CommandValidator.checkCommand(cmd, key);
                                 output = commandExecutor.execute(cmd);
-                                verifyLogin(cmd, key);
+                                CommandValidator.verifyLogin(cmd, key);
                             } catch (Exception e) {
                                 logger.log(e, clientInput, key);
                                 output = e.getMessage();
                             }
 
-                            logger.printClientOutput(output, key);
+                            logger.logClientOutput(output, key);
                             writeClientOutput(clientChannel, output);
                         } else if (key.isAcceptable()) {
                             accept(selector, key);
@@ -122,46 +106,6 @@ public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
         } catch (IOException e) {
             System.out.println("failed to start server");
         }
-    }
-
-    /**
-     * Verifies if the Login Command has been executed successfully
-     * <p>
-     * If the Login Command has been executed successfully the User that the Command
-     * is tied to gets attached to the current Selection Key
-     * </p>
-     * <p>
-     * If the Login Command has not been executed successfully nothing happens
-     * and the User receives the Message generated by the failed Login Command
-     * </p>
-     *
-     * @param cmd the Command to be checked
-     * @param key the User's Selection key
-     */
-    private void verifyLogin(Command cmd, SelectionKey key) {
-        if (cmd == null || cmd.getType() != CommandType.LOGIN_COMMAND) {
-            return;
-        }
-
-        LoginCommand loginCommand = (LoginCommand) cmd;
-
-        if (!loginCommand.isSuccessful()) {
-            return;
-        }
-
-        User user = loginCommand.getUser();
-        attach(user, key);
-    }
-
-    /**
-     * Attaches User to his Selection Key
-     *
-     * @param user the User to be attached
-     * @param key  the User's Selection Key
-     */
-    private void attach(User user, SelectionKey key) {
-        key.attach(user);
-        selectionKeysByUser.put(user, key);
     }
 
     @Override
@@ -211,159 +155,14 @@ public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
         accept.register(selector, SelectionKey.OP_READ);
     }
 
-    /**
-     * Checks if the {@code command} is valid for the User attached to the {@code key}
-     *
-     * <p>
-     * A User that has not logged in can only log in and register in to the System
-     * </p>
-     * <p>
-     * A User that has logged in can do everything except log in or register in to the System
-     * </p>
-     *
-     * @param command the Command to be checked
-     * @param key     the Selection Key to which a User is attached
-     * @return null if the User does not have Permission to execute said Command, the Command itself otherwise
-     * @throws UserNotLoggedInException     if the User has not logged in to the System
-     * @throws UserAlreadyLoggedInException if the User has already been logged in to the System
-     */
-    private Command checkCommand(Command command, SelectionKey key)
-        throws UserNotLoggedInException, UserAlreadyLoggedInException {
-        if (command == null) {
-            return null;
-        }
-        boolean isLoggedIn = key.attachment() != null;
-
-        if (!isLoggedIn) {
-            if (command.getType() == CommandType.REGISTER_COMMAND || command.getType() == CommandType.LOGIN_COMMAND) {
-                return command;
-            }
-
-            throw new UserNotLoggedInException("You have not logged in");
-        }
-
-        if (command.getType() == CommandType.LOGIN_COMMAND || command.getType() == CommandType.REGISTER_COMMAND) {
-            throw new UserAlreadyLoggedInException("You have already logged in");
-        }
-
-        return command;
-    }
-
-    @Override
-    public void logIn(User user) throws UserAlreadyLoggedInException, UserNotRegisteredException {
-        attachStreamingPort(user);
-    }
-
-    @Override
-    public void logOut(User user) throws UserNotLoggedInException, UserNotRegisteredException {
-        detachStreamingPort(user);
-        selectionKeysByUser.remove(user);
-    }
-
-    private void attachStreamingPort(User user) throws UserAlreadyLoggedInException, UserNotRegisteredException {
-        synchronized (currentSessionLock) {
-            checkRegistered(user);
-
-            if (isLoggedIn(user)) {
-                throw new UserAlreadyLoggedInException("User already logged in");
-            }
-
-            if (streamingPortsByUser.isEmpty()) {
-                streamingPortsByUser.put(user, STREAMING_PORT);
-                ports.add(STREAMING_PORT);
-                return;
-            }
-
-            long nextKey = ports.last() + 1;
-            streamingPortsByUser.put(user, nextKey);
-            ports.add(nextKey);
-        }
-    }
-
-    private void detachStreamingPort(User user) throws UserNotLoggedInException, UserNotRegisteredException {
-        synchronized (currentSessionLock) {
-            checkRegistered(user);
-
-            if (!isLoggedIn(user)) {
-                throw new UserNotLoggedInException("User not logged in");
-            }
-
-            ports.remove(streamingPortsByUser.get(user));
-            streamingPortsByUser.remove(user);
-        }
-    }
-
-    private void checkRegistered(User user) throws UserNotRegisteredException {
-        if (database.doesUserExist(user)) {
-            return;
-        }
-
-        throw new UserNotRegisteredException(
-            "A User with Email: " + user.email() + " and Password: " + user.password() + " does not exist");
-    }
-
-    @Override
-    public boolean isLoggedIn(User user) {
-        return streamingPortsByUser.containsKey(user);
-    }
-
-    @Override
-    public long getPort(User user) {
-        if (streamingPortsByUser.containsKey(user)) {
-            return streamingPortsByUser.get(user);
-
-        }
-
-        return -1;
-    }
-
-    @Override
-    public void lockPort(long port) {
-        if (!ports.contains(port)) {
-            return;
-        }
-
-        currentlyStreamingPorts.add(port);
-    }
-
-    @Override
-    public void isPortLocked(long port) throws PortCurrentlyStreamingException {
-        if (currentlyStreamingPorts.contains(port)) {
-            throw new PortCurrentlyStreamingException(
-                "You are currently listening to a Song. Stop the current one and than try again");
-        }
-    }
-
-    @Override
-    public void freePort(long port) {
-        try {
-            isPortLocked(port);
-        } catch (PortCurrentlyStreamingException ignore) {
-            // Ignore - this is what we want
-        }
-
-        currentlyStreamingPorts.remove(port);
-    }
-
     @Override
     public Database getDatabase() {
         return database;
     }
 
-    public Map<User, Long> getStreamingPortsByUser() {
-        return streamingPortsByUser;
-    }
-
-    public Map<User, SelectionKey> getSelectionKeysByUser() {
-        return selectionKeysByUser;
-    }
-
-    public Set<Long> getCurrentlyStreamingPorts() {
-        return currentlyStreamingPorts;
-    }
-
-    public TreeSet<Long> getPorts() {
-        return ports;
+    @Override
+    public UserService getUserService() {
+        return userService;
     }
 
     public static void main(String[] args) {

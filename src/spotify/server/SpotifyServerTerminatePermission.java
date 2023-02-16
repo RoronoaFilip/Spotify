@@ -8,7 +8,7 @@ package spotify.server;
  * including terminating the Server
  * </p>
  */
-public interface SpotifyServerTerminatePermission extends SpotifyServerStreamingPermission {
+public interface SpotifyServerTerminatePermission extends SpotifyServer {
     /**
      * Marks the Server as not Working and waking up any Selectors that have status Waiting
      */

@@ -1,7 +1,7 @@
 package spotify.database.playlist;
 
 import spotify.database.song.Song;
-import spotify.database.user.User;
+import spotify.user.User;
 
 import java.util.Collection;
 

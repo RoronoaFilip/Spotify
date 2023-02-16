@@ -1,6 +1,6 @@
 package spotify.logger;
 
-import spotify.database.user.User;
+import spotify.user.User;
 
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -62,14 +62,19 @@ public class SpotifyLogger {
      * @param input the input to be printed
      * @param key   the key associated to the Socket Channel
      */
-    public void printClientInput(String input, SelectionKey key) {
+    public void logClientInput(String input, SelectionKey key) {
         User user = (User) key.attachment();
 
+        String message;
         if (user == null) {
-            System.out.println("An unknown User requested <" + input + ">");
+            message = "An unknown User requested <" + input + ">";
         } else {
-            System.out.println("User: " + user + " requested <" + input + ">");
+            message = "User: " + user + " requested <" + input + ">";
         }
+
+        System.out.println(message);
+        writer.println(message);
+        writer.println();
 
         System.out.println();
     }
@@ -80,14 +85,19 @@ public class SpotifyLogger {
      * @param output the output to be printed
      * @param key    the key associated to the Socket Channel
      */
-    public void printClientOutput(String output, SelectionKey key) {
+    public void logClientOutput(String output, SelectionKey key) {
         User user = (User) key.attachment();
 
+        String message;
         if (user == null) {
-            System.out.println("Sending <" + output + "> to an unknown  User");
+            message = "Sending <" + output + "> to an unknown  User";
         } else {
-            System.out.println("Sending <" + output + "> to User: " + user);
+            message = "Sending <" + output + "> to User: " + user;
         }
+
+        System.out.println(message);
+        writer.println(message);
+        writer.println();
 
         System.out.println();
     }
