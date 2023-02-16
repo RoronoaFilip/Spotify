@@ -3,12 +3,11 @@ package spotify.server.command.factory;
 import org.junit.jupiter.api.Test;
 import spotify.server.command.Command;
 import spotify.server.command.CommandType;
-import spotify.server.command.factory.CommandFactory;
 import spotify.server.command.thread.safe.PlayCommand;
 import spotify.server.command.thread.safe.SearchCommand;
 import spotify.server.command.thread.safe.ShowPlaylistCommand;
 import spotify.server.command.thread.safe.TopSongsCommand;
-import spotify.user.User;
+import spotify.database.user.User;
 import spotify.server.DefaultSpotifyServer;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

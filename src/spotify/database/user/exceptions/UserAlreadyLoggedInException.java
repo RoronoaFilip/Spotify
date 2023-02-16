@@ -1,4 +1,4 @@
-package spotify.user.exceptions;
+package spotify.database.user.exceptions;
 
 public class UserAlreadyLoggedInException extends Exception {
     public UserAlreadyLoggedInException(String message) {

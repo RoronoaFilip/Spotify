@@ -1,11 +1,11 @@
 package spotify.server.command.validator;
 
+import spotify.database.user.User;
+import spotify.database.user.exceptions.UserAlreadyLoggedInException;
+import spotify.database.user.exceptions.UserNotLoggedInException;
 import spotify.server.command.Command;
 import spotify.server.command.CommandType;
 import spotify.server.command.thread.unsafe.LoginCommand;
-import spotify.user.User;
-import spotify.user.exceptions.UserAlreadyLoggedInException;
-import spotify.user.exceptions.UserNotLoggedInException;
 
 import java.nio.channels.SelectionKey;
 

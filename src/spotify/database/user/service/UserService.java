@@ -1,13 +1,10 @@
-package spotify.user.service;
+package spotify.database.user.service;
 
-import spotify.server.command.Command;
+import spotify.database.user.User;
+import spotify.database.user.exceptions.UserAlreadyLoggedInException;
+import spotify.database.user.exceptions.UserNotLoggedInException;
 import spotify.server.exceptions.PortCurrentlyStreamingException;
-import spotify.user.User;
-import spotify.user.exceptions.UserAlreadyLoggedInException;
-import spotify.user.exceptions.UserNotLoggedInException;
-import spotify.user.exceptions.UserNotRegisteredException;
-
-import java.nio.channels.SelectionKey;
+import spotify.database.user.exceptions.UserNotRegisteredException;
 
 public interface UserService {
     /**

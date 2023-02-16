@@ -1,6 +1,6 @@
 package spotify.logger;
 
-import spotify.user.User;
+import spotify.database.user.User;
 
 import java.io.IOException;
 import java.io.PrintWriter;

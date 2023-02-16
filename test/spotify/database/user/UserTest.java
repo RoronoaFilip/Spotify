@@ -1,6 +1,6 @@
-package spotify.user;
+package spotify.database.user;
 
-import spotify.user.User;
+import spotify.database.user.User;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;

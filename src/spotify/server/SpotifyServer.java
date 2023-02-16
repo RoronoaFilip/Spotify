@@ -1,7 +1,7 @@
 package spotify.server;
 
 import spotify.database.Database;
-import spotify.user.service.UserService;
+import spotify.database.user.service.UserService;
 
 /**
  * Represents the lowest Permission in the Spotify Server

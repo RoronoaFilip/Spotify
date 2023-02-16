@@ -3,7 +3,7 @@ package spotify.server.command.thread.unsafe;
 import spotify.server.command.Command;
 import spotify.server.command.CommandType;
 import spotify.server.SpotifyServer;
-import spotify.user.User;
+import spotify.database.user.User;
 
 /**
  * Disconnect Command. Represents a Request from the User to log out

@@ -11,7 +11,7 @@ import spotify.server.command.thread.unsafe.CreatePlaylistCommand;
 import spotify.server.command.thread.unsafe.DisconnectCommand;
 import spotify.server.command.thread.unsafe.LoginCommand;
 import spotify.server.command.thread.unsafe.RegisterCommand;
-import spotify.user.User;
+import spotify.database.user.User;
 import spotify.server.SpotifyServerTerminatePermission;
 
 /**

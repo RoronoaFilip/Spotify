@@ -2,14 +2,14 @@ package spotify.server;
 
 import spotify.database.Database;
 import spotify.database.InMemoryDatabase;
+import spotify.database.user.User;
+import spotify.database.user.service.DefaultUserService;
+import spotify.database.user.service.UserService;
 import spotify.logger.SpotifyLogger;
 import spotify.server.command.Command;
 import spotify.server.command.executor.CommandExecutor;
 import spotify.server.command.factory.CommandFactory;
 import spotify.server.command.validator.CommandValidator;
-import spotify.user.User;
-import spotify.user.service.DefaultUserService;
-import spotify.user.service.UserService;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -84,7 +84,9 @@ public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
                             Command cmd = CommandFactory.create(clientInput, (User) key.attachment(), this);
                             try {
                                 CommandValidator.checkCommand(cmd, key);
+
                                 output = commandExecutor.execute(cmd);
+
                                 CommandValidator.verifyLogin(cmd, key);
                             } catch (Exception e) {
                                 logger.log(e, clientInput, key);

@@ -1,16 +1,12 @@
-package spotify.user.service;
+package spotify.database.user.service;
 
 import spotify.database.Database;
-import spotify.server.command.Command;
-import spotify.server.command.CommandType;
-import spotify.server.command.thread.unsafe.LoginCommand;
+import spotify.database.user.User;
+import spotify.database.user.exceptions.UserAlreadyLoggedInException;
 import spotify.server.exceptions.PortCurrentlyStreamingException;
-import spotify.user.User;
-import spotify.user.exceptions.UserAlreadyLoggedInException;
-import spotify.user.exceptions.UserNotLoggedInException;
-import spotify.user.exceptions.UserNotRegisteredException;
+import spotify.database.user.exceptions.UserNotLoggedInException;
+import spotify.database.user.exceptions.UserNotRegisteredException;
 
-import java.nio.channels.SelectionKey;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;

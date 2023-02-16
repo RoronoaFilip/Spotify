@@ -5,7 +5,7 @@ import spotify.server.command.CommandType;
 import spotify.database.song.Song;
 import spotify.server.SpotifyServer;
 import spotify.server.streamer.SongStreamer;
-import spotify.user.User;
+import spotify.database.user.User;
 
 /**
  * Play Command. Represents a Request from the User for a Song to be played

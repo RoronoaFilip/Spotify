@@ -3,7 +3,7 @@ package spotify.server.command.thread.safe;
 import spotify.server.command.Command;
 import spotify.server.command.CommandType;
 import spotify.database.playlist.Playlist;
-import spotify.user.User;
+import spotify.database.user.User;
 import spotify.server.SpotifyServer;
 
 import java.util.List;

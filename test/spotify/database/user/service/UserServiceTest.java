@@ -1,4 +1,4 @@
-package spotify.user.service;
+package spotify.database.user.service;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -6,10 +6,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
 import spotify.database.Database;
-import spotify.user.User;
-import spotify.user.exceptions.UserAlreadyLoggedInException;
-import spotify.user.exceptions.UserNotLoggedInException;
-import spotify.user.exceptions.UserNotRegisteredException;
+import spotify.database.user.User;
+import spotify.database.user.exceptions.UserAlreadyLoggedInException;
+import spotify.database.user.exceptions.UserNotLoggedInException;
+import spotify.database.user.exceptions.UserNotRegisteredException;
+import spotify.database.user.service.DefaultUserService;
 import spotify.server.exceptions.PortCurrentlyStreamingException;
 
 import java.nio.channels.SelectionKey;

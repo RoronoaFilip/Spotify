@@ -3,7 +3,7 @@ package spotify.database.playlist;
 import spotify.database.Database;
 import spotify.database.song.Song;
 import spotify.database.song.exceptions.SongNotFoundException;
-import spotify.user.User;
+import spotify.database.user.User;
 
 import java.util.Collection;
 import java.util.HashSet;

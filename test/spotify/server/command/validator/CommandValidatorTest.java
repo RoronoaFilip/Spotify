@@ -7,9 +7,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import spotify.server.command.CommandType;
 import spotify.server.command.thread.safe.PlayCommand;
 import spotify.server.command.thread.unsafe.LoginCommand;
-import spotify.user.User;
-import spotify.user.exceptions.UserAlreadyLoggedInException;
-import spotify.user.exceptions.UserNotLoggedInException;
+import spotify.database.user.User;
+import spotify.database.user.exceptions.UserNotLoggedInException;
 
 import java.nio.channels.SelectionKey;
 

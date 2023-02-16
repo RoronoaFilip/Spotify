@@ -5,7 +5,7 @@ import spotify.server.command.CommandType;
 import spotify.database.playlist.Playlist;
 import spotify.database.playlist.exceptions.NoSuchPlaylistException;
 import spotify.database.song.Song;
-import spotify.user.User;
+import spotify.database.user.User;
 import spotify.server.SpotifyServer;
 
 /**

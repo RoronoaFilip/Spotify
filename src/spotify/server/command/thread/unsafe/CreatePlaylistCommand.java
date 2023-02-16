@@ -2,7 +2,7 @@ package spotify.server.command.thread.unsafe;
 
 import spotify.server.command.Command;
 import spotify.server.command.CommandType;
-import spotify.user.User;
+import spotify.database.user.User;
 import spotify.server.SpotifyServer;
 
 /**

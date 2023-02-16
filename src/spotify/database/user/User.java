@@ -1,4 +1,4 @@
-package spotify.user;
+package spotify.database.user;
 
 /**
  * Represents a User in the System

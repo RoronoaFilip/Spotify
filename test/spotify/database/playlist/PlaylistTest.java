@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 import spotify.database.Database;
 import spotify.database.InMemoryDatabase;
 import spotify.database.song.Song;
-import spotify.user.User;
+import spotify.database.user.User;
 
 import javax.sound.sampled.AudioFormat;
 import java.util.Collection;
