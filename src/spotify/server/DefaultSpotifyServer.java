@@ -11,10 +11,10 @@ import spotify.database.user.User;
 import spotify.database.user.exceptions.UserAlreadyLoggedInException;
 import spotify.database.user.exceptions.UserNotLoggedInException;
 import spotify.database.user.exceptions.UserNotRegisteredException;
+import spotify.logger.SpotifyLogger;
 import spotify.server.exceptions.PortCurrentlyStreamingException;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -22,8 +22,6 @@ import java.nio.channels.Selector;
 import java.nio.channels.ServerSocketChannel;
 import java.nio.channels.SocketChannel;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -41,6 +39,7 @@ public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
 
     private final CommandExecutor commandExecutor;
     private final Database database;
+    private SpotifyLogger logger;
 
     private final int port;
     private boolean isServerWorking;
@@ -57,6 +56,7 @@ public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
     public DefaultSpotifyServer(int port, CommandExecutor commandExecutor, Database database) {
         this.port = port;
         this.commandExecutor = commandExecutor;
+        this.logger = new SpotifyLogger(LOG_FILE_NAME);
 
         this.buffer = ByteBuffer.allocate(BUFFER_SIZE);
 
@@ -71,8 +71,7 @@ public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
 
     @Override
     public void run() {
-        try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open(); database;
-             PrintWriter logsWriter = new PrintWriter(Files.newBufferedWriter(Path.of(LOG_FILE_NAME)))) {
+        try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open(); database) {
             selector = Selector.open();
             configureServerSocketChannel(serverSocketChannel, selector);
 
@@ -95,7 +94,7 @@ public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
                                 continue;
                             }
 
-                            printClientInput(clientInput, key);
+                            logger.printClientInput(clientInput, key);
 
                             String output;
                             Command cmd = CommandFactory.create(clientInput, (User) key.attachment(), this);
@@ -104,11 +103,11 @@ public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
                                 output = commandExecutor.execute(cmd);
                                 verifyLogin(cmd, key);
                             } catch (Exception e) {
-                                log(e, clientInput, key, logsWriter);
+                                logger.log(e, clientInput, key);
                                 output = e.getMessage();
                             }
 
-                            printClientOutput(output, key);
+                            logger.printClientOutput(output, key);
                             writeClientOutput(clientChannel, output);
                         } else if (key.isAcceptable()) {
                             accept(selector, key);
@@ -123,78 +122,6 @@ public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
         } catch (IOException e) {
             System.out.println("failed to start server");
         }
-    }
-
-    /**
-     * Logs an Error generated from a Command by the current User to the Logs Files
-     *
-     * @param e           the generated Error
-     * @param clientInput the Client Input that triggered the Error
-     * @param key         the Selection key to which the current User is attached
-     * @param writer      a PrintWriter to the Logs File
-     */
-    private void log(Exception e, String clientInput, SelectionKey key, PrintWriter writer) {
-        User user = (User) key.attachment();
-
-        // Log File
-        writer.write("Request <" + clientInput + ">");
-
-        if (user == null) {
-            writer.write(" by unknown User");
-        } else {
-            writer.write(" by User: " + user);
-        }
-        writer.write(" triggered an Exception:" + System.lineSeparator());
-        e.printStackTrace(writer);
-        writer.write(System.lineSeparator());
-
-        // Terminal
-        System.out.print("Exception " + e.getClass() + " was triggered by ");
-        if (user == null) {
-            System.out.print("unknown User");
-        } else {
-            System.out.print("User :" + user);
-        }
-        System.out.println();
-        System.out.println("Exception Message: " + e.getMessage());
-        System.out.println("Request that caused it <" + clientInput + ">");
-        System.out.println();
-    }
-
-    /**
-     * Prints the input of the current Socket Channel to the Terminal
-     *
-     * @param input the input to be printed
-     * @param key   the key associated to the Socket Channel
-     */
-    private void printClientInput(String input, SelectionKey key) {
-        User user = (User) key.attachment();
-
-        if (user == null) {
-            System.out.println("An unknown User requested <" + input + ">");
-        } else {
-            System.out.println("User: " + user + " requested <" + input + ">");
-        }
-
-        System.out.println();
-    }
-
-    /**
-     * Prints the out of the current Socket Channel to the Terminal
-     *
-     * @param output the output to be printed
-     * @param key    the key associated to the Socket Channel
-     */
-    private void printClientOutput(String output, SelectionKey key) {
-        User user = (User) key.attachment();
-
-        if (user == null) {
-            System.out.println("Sending <" + output + "> to an unknown  User");
-        } else {
-            System.out.println("Sending <" + output + "> to User: " + user);
-        }
-
-        System.out.println();
     }
 
     /**
