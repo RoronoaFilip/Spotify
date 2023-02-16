@@ -4,7 +4,7 @@ import spotify.server.command.Command;
 import spotify.server.command.CommandType;
 import spotify.database.song.Song;
 import spotify.server.SpotifyServer;
-import spotify.server.streamer.SongStreamer;
+import spotify.database.song.streamer.SongStreamer;
 import spotify.database.user.User;
 
 /**

@@ -1,5 +1,7 @@
 package spotify.client;
 
+import spotify.database.song.listener.SongListener;
+
 import javax.naming.OperationNotSupportedException;
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.AudioSystem;

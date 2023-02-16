@@ -1,4 +1,4 @@
-package spotify.server.streamer;
+package spotify.database.song.streamer;
 
 import spotify.database.song.Song;
 import spotify.server.SpotifyServer;

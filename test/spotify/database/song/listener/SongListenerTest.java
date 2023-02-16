@@ -1,5 +1,6 @@
-package spotify.client;
+package spotify.database.song.listener;
 
+import spotify.client.SpotifyClient;
 import spotify.server.command.executor.CommandExecutor;
 import spotify.database.Database;
 import spotify.database.InMemoryDatabase;
@@ -13,7 +14,7 @@ import spotify.database.user.exceptions.UserNotRegisteredException;
 import org.junit.jupiter.api.Test;
 import spotify.server.DefaultSpotifyServer;
 import spotify.server.exceptions.PortCurrentlyStreamingException;
-import spotify.server.streamer.SongStreamer;
+import spotify.database.song.streamer.SongStreamer;
 
 import javax.sound.sampled.AudioFormat;
 import javax.sound.sampled.LineUnavailableException;
@@ -46,7 +47,6 @@ public class SongListenerTest {
         long port = spotifyServer.getUserService().getPort(user);
 
         Thread thread = new Thread(new SongStreamer((int) port, song, spotifyServer));
-        thread.setDaemon(true);
         thread.start();
 
         client.constructSourceDataLine(testSongAudioFormatString);

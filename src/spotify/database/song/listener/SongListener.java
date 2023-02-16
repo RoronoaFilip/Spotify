@@ -1,4 +1,6 @@
-package spotify.client;
+package spotify.database.song.listener;
+
+import spotify.client.SpotifyClient;
 
 import javax.sound.sampled.SourceDataLine;
 import java.io.BufferedInputStream;
