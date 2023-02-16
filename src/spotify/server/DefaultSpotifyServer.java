@@ -12,6 +12,7 @@ import spotify.server.command.factory.CommandFactory;
 import spotify.server.command.validator.CommandValidator;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.nio.channels.SelectionKey;
@@ -55,7 +56,8 @@ public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
 
     @Override
     public void run() {
-        try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open(); database) {
+        final PrintWriter writer = logger.getWriter();
+        try (ServerSocketChannel serverSocketChannel = ServerSocketChannel.open(); database; writer) {
             selector = Selector.open();
             configureServerSocketChannel(serverSocketChannel, selector);
 

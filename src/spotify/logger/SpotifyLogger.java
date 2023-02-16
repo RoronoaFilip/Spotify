@@ -101,4 +101,12 @@ public class SpotifyLogger {
 
         System.out.println();
     }
+
+    public void closeLogger() {
+        writer.close();
+    }
+
+    public PrintWriter getWriter() {
+        return writer;
+    }
 }
