@@ -39,7 +39,7 @@ It communicates with the `Server` through the following Requests:
 | `add-song-to` | \<name_of_the_playlist> \<artist-song> | Adds a Song to a Playlist, if the current User has a Playlist with such Name | "add-song-to my_favorites Queen - Bohemian Rapsody" |
 | `show-playlist` | \<name_of_the_playlist> | Shows the Songs in a given Playlist | "show-playlist my_favorites" |
 | `play` | \<artist-song> | Plays a Song, if it exists in the Database. The Song must be inputed like this: \<Artist Name> - \<Song Name> | "play Queen - Bohemian Rhapsody" |
-| stop | | Stops a song | "stop" |  
+| `stop` | | Stops a song | "stop" |  
 
 For additional Information about the Requests refer to the javadoc in the `Command` Classes.  
 
