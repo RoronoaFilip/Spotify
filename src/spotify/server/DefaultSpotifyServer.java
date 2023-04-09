@@ -3,6 +3,8 @@ package spotify.server;
 import spotify.database.Database;
 import spotify.database.InMemoryDatabase;
 import spotify.database.user.User;
+import spotify.database.user.exceptions.UserNotLoggedInException;
+import spotify.database.user.exceptions.UserNotRegisteredException;
 import spotify.database.user.service.DefaultUserService;
 import spotify.database.user.service.UserService;
 import spotify.logger.SpotifyLogger;
@@ -62,21 +64,22 @@ public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
             configureServerSocketChannel(serverSocketChannel, selector);
 
             while (isServerWorking) {
-                try {
-                    int readyChannels = selector.select();
-                    if (readyChannels == 0) {
-                        continue;
-                    }
+                int readyChannels = selector.select();
+                if (readyChannels == 0) {
+                    continue;
+                }
 
-                    Iterator<SelectionKey> keyIterator = selector.selectedKeys().iterator();
-                    while (keyIterator.hasNext()) {
-                        SelectionKey key = keyIterator.next();
+                Iterator<SelectionKey> keyIterator = selector.selectedKeys().iterator();
+                while (keyIterator.hasNext()) {
+                    SelectionKey key = keyIterator.next();
 
-                        if (key.isReadable()) {
-                            SocketChannel clientChannel = (SocketChannel) key.channel();
+                    if (key.isReadable()) {
+                        SocketChannel clientChannel = (SocketChannel) key.channel();
 
+                        try {
                             String clientInput = getClientInput(clientChannel);
                             if (clientInput == null) {
+                                userService.logOut((User) key.attachment());
                                 continue;
                             }
 
@@ -97,14 +100,24 @@ public class DefaultSpotifyServer implements SpotifyServerTerminatePermission {
 
                             logger.logClientOutput(output, key);
                             writeClientOutput(clientChannel, output);
-                        } else if (key.isAcceptable()) {
-                            accept(selector, key);
+                        } catch (IOException e) {
+                            if (e.getMessage().contains("Connection reset")) {
+                                try {
+                                    userService.logOut((User) key.attachment());
+                                    clientChannel.close();
+                                    key.cancel();
+                                } catch (UserNotLoggedInException | UserNotRegisteredException ex) {
+                                    //
+                                }
+                            }
+                            System.out.println("Error occurred while processing client request: " + e.getMessage());
+                        } catch (UserNotLoggedInException | UserNotRegisteredException e) {
+                            // ignore - user has disconnected
                         }
-
-                        keyIterator.remove();
+                    } else if (key.isAcceptable()) {
+                        accept(selector, key);
                     }
-                } catch (IOException e) {
-                    System.out.println("Error occurred while processing client request: " + e.getMessage());
+                    keyIterator.remove();
                 }
             }
         } catch (IOException e) {
