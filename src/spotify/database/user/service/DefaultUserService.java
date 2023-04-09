@@ -33,11 +33,19 @@ public class DefaultUserService implements UserService {
 
     @Override
     public void logIn(User user) throws UserAlreadyLoggedInException, UserNotRegisteredException {
+        if (user == null) {
+            return;
+        }
+
         attachStreamingPort(user);
     }
 
     @Override
     public void logOut(User user) throws UserNotLoggedInException, UserNotRegisteredException {
+        if (user == null) {
+            return;
+        }
+
         detachStreamingPort(user);
     }
 
