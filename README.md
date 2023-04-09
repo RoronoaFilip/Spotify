@@ -1,7 +1,13 @@
 # Spotify
 #### This is a Project made for passing the MJT Course @ FMI. Link to the Project [here](https://github.com/fmi/java-course/blob/master/course-projects/spotify.md).
 ##
-This is a Program that Streams Music. It consists of a `Server` and a `Client`.
+This is a Program that Streams Music. It consists of a `Server` and a `Client`.  
+
+* The Client-Server Communication is implemented using the `java.nio` API.  
+* The Streaming of the Songs itself is implemented using the `java.net` API.  
+* The Playing of the Audio is implemented using the `javax.sound`  
+
+The Song's Data is read on the Server Side of the `java.net` Communication from the `.wav` Song File as bytes. Those Bytes are then written to the Socket, a.k.a. sent to the Client Side of the `java.net` Communication, which then reads the Bytes and writes them the to a `SourceDataLine` Object which plays the audio.
 
 ## Server
 The `Server` accepts an Instance of the `CommandExecutor` Class and the `Database` Interface, which in turn accepts the following four File Names as Strings:
@@ -67,7 +73,7 @@ The saved Information can be loaded by starting the Program again with these Fil
 ## Streaming a Song
 The `play` Command starts a `java.net` Connection that streams a Song to the `Client` if the `Client` connects to it.  
 
-The `Server` starts a Daemon Thread that is going to read the Song file as Bytes and write them to the Socket that has connected to it.  
+The `Server` starts a Daemon Thread that is going to read the Song file as Bytes and write them to the Socket that has connected to it(the Client).  
   
 The `Client` must create an Instance of the `SourceDataLine` Class from the java Sound API from the received Response, a Thread that connects to the `Server`'s thread through a `java.net` Connection to read the song (as bytes) and write them to the `SourceDataLine` Object.  
   
