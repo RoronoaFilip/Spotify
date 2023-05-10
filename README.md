@@ -21,12 +21,16 @@ Default File Names are present in the `Database` Interface. For additional Infom
 
 The `Server` handles the Requests through the `java.nio` API.
 
+## User Service
+The `UserService` Class handles the current Sessions of the Clients that are currently connected to the `Server`. 
+When a Clients logs in, he is marked as `logged in` and the next free Port for Music Streaming is assigned to him. When a Client logs out the Port is freed and he is removed from `logged in`.
+
 ## Client
 The `Client` is a Thread that can be started once the `Server` is up and running.  
 
-It communicates with the `Server` through the following Requests:
+It communicates with the `Server` through the following Commands:
 
-## Requests
+## Commands
 |Command|Needed Parameters|What It Does|Example Request|
 |:-:|:-:|:-:|:-:|
 | `register` | \<email> \<password> | Registers a new User | "register example@example pass123" |
