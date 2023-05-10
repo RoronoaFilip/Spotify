@@ -15,6 +15,7 @@ import spotify.server.exceptions.PortCurrentlyStreamingException;
 
 import java.nio.channels.SelectionKey;
 import java.util.Map;
+import java.util.Queue;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -33,7 +34,7 @@ public class UserServiceTest {
     private Map<User, Long> streamingPortsByUser;
     private Map<User, SelectionKey> selectionKeysByUser;
     private Set<Long> currentlyStreamingPorts;
-    private TreeSet<Long> ports;
+    private Queue<Long> ports;
 
     private User user = new User(TEST_STRING, TEST_STRING);
 

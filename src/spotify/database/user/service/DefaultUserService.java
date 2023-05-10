@@ -7,11 +7,7 @@ import spotify.server.exceptions.PortCurrentlyStreamingException;
 import spotify.database.user.exceptions.UserNotLoggedInException;
 import spotify.database.user.exceptions.UserNotRegisteredException;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 
 public class DefaultUserService implements UserService {
     private final long initialStreamingPort;
@@ -19,7 +15,7 @@ public class DefaultUserService implements UserService {
 
     private final Map<User, Long> streamingPortsByUser;
     private final Set<Long> currentlyStreamingPorts;
-    private final TreeSet<Long> ports;
+    private final PriorityQueue<Long> ports;
     private final Object currentSessionLock = new Object();
 
     public DefaultUserService(long initialStreamingPort, Database database) {
@@ -28,7 +24,9 @@ public class DefaultUserService implements UserService {
 
         streamingPortsByUser = new HashMap<>();
         currentlyStreamingPorts = new HashSet<>();
-        ports = new TreeSet<>();
+
+        ports = new PriorityQueue<>();
+        ports.add(initialStreamingPort);
     }
 
     @Override
@@ -49,6 +47,14 @@ public class DefaultUserService implements UserService {
         detachStreamingPort(user);
     }
 
+    /**
+     * Attaches a streaming port to the {@code user} by picking the first one in the Priority Queue {@code ports}
+     * If the Priority Queue is empty after getting the top one, adds the next one in.
+     *
+     * @param user
+     * @throws UserAlreadyLoggedInException if the {@code user} is already logged in
+     * @throws UserNotRegisteredException if the {@code user} is not registered
+     */
     private void attachStreamingPort(User user) throws UserAlreadyLoggedInException, UserNotRegisteredException {
         synchronized (currentSessionLock) {
             checkRegistered(user);
@@ -57,18 +63,22 @@ public class DefaultUserService implements UserService {
                 throw new UserAlreadyLoggedInException("User already logged in");
             }
 
-            if (streamingPortsByUser.isEmpty()) {
-                streamingPortsByUser.put(user, initialStreamingPort);
-                ports.add(initialStreamingPort);
-                return;
+            long key = ports.poll();
+            if (ports.isEmpty()) {
+                ports.add(key + 1);
             }
 
-            long nextKey = ports.last() + 1;
-            streamingPortsByUser.put(user, nextKey);
-            ports.add(nextKey);
+            streamingPortsByUser.put(user, key);
         }
     }
 
+    /**
+     * Detaches a streaming port to the {@code user} by removing it from the Map {@code streamingPortsByUser} and adding it to the Priority Queue {@code ports}
+     *
+     * @param user - the User that is logging out
+     * @throws UserNotLoggedInException if the {@code user} is not logged in
+     * @throws UserNotRegisteredException if the {@code user} is not registered
+     */
     private void detachStreamingPort(User user) throws UserNotLoggedInException, UserNotRegisteredException {
         synchronized (currentSessionLock) {
             checkRegistered(user);
@@ -77,7 +87,7 @@ public class DefaultUserService implements UserService {
                 throw new UserNotLoggedInException("User not logged in");
             }
 
-            ports.remove(streamingPortsByUser.get(user));
+            ports.add(streamingPortsByUser.get(user));
             streamingPortsByUser.remove(user);
         }
     }
@@ -147,7 +157,7 @@ public class DefaultUserService implements UserService {
         return currentlyStreamingPorts;
     }
 
-    public TreeSet<Long> getPorts() {
+    public Queue<Long> getPorts() {
         return ports;
     }
 }
